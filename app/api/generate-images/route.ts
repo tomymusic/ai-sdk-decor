@@ -1,27 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ImageModel, experimental_generateImage as generateImage } from "ai";
 import { replicate } from "@ai-sdk/replicate";
-import { ProviderKey } from "@/lib/provider-config";
+import { MODEL_CONFIGS } from "@/lib/provider-config"; // ✅ Importación correcta
 
-/**
- * Intended to be slightly less than the maximum execution time allowed by the
- * runtime so that we can gracefully terminate our request.
- */
 const TIMEOUT_MILLIS = 55 * 1000;
-
-const DEFAULT_IMAGE_SIZE = "1024x1024";
-
-interface ProviderConfig {
-  createImageModel: (modelId: string) => ImageModel;
-  dimensionFormat: "size";
-}
-
-const providerConfig: Record<ProviderKey, ProviderConfig> = {
-  replicate: {
-    createImageModel: replicate.image,
-    dimensionFormat: "size",
-  },
-};
 
 const withTimeout = <T>(
   promise: Promise<T>,
@@ -40,21 +22,26 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const prompt = formData.get("prompt") as string;
   const uploadedImage = formData.get("image") as File;
-  
+
   try {
     if (!prompt || !uploadedImage) {
-      const error = "Invalid request parameters";
+      const error = "Invalid request parameters: both image and prompt are required";
       console.error(`${error} [requestId=${requestId}]`);
       return NextResponse.json({ error }, { status: 400 });
     }
 
-    const config = providerConfig["replicate"];
+    // Convertir imagen a Base64
+    const imageArrayBuffer = await uploadedImage.arrayBuffer();
+    const imageBase64 = Buffer.from(imageArrayBuffer).toString("base64");
+
+    const modelId = MODEL_CONFIGS.performance.replicate; // ✅ Corrección aquí
     const startstamp = performance.now();
+
     const generatePromise = generateImage({
-      model: config.createImageModel(modelId),
+      model: replicate.image(modelId),
       prompt,
-      input_image: uploadedImage,
-      size: DEFAULT_IMAGE_SIZE,
+      input_image: `data:image/png;base64,${imageBase64}`, // ✅ Imagen en Base64
+      size: "1024x1024",
       seed: Math.floor(Math.random() * 1000000),
     }).then(({ image, warnings }) => {
       if (warnings?.length > 0) {
