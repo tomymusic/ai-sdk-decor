@@ -15,6 +15,7 @@ export const PROVIDERS: Record<
     iconPath: "/provider-icons/replicate.svg",
     color: "from-purple-500 to-blue-500",
     models: [
+      "controlnet-hough",
       "black-forest-labs/flux-1.1-pro",
       "black-forest-labs/flux-1.1-pro-ultra",
       "black-forest-labs/flux-dev",
@@ -33,10 +34,10 @@ export const PROVIDERS: Record<
 
 export const MODEL_CONFIGS: Record<ModelMode, Record<ProviderKey, string>> = {
   performance: {
-    replicate: "stability-ai/stable-diffusion-3.5-large-turbo",
+    replicate: "854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
   },
   quality: {
-    replicate: "stability-ai/stable-diffusion-3.5-large",
+    replicate: "854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
   },
 };
 
