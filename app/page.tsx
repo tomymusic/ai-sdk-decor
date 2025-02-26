@@ -5,10 +5,12 @@ import ImageUploader from "@/components/ImageUploader";
 export const dynamic = "force-dynamic";
 
 export default function Page() {
+  const suggestions = getRandomSuggestions(); // Llamamos la función una sola vez
+
   return (
     <div>
-      <ImageUploader />  {/* Agregamos el componente de subida de imágenes */}
-      <ImagePlayground suggestions={getRandomSuggestions()} />
+      <ImageUploader />
+      <ImagePlayground key={JSON.stringify(suggestions)} suggestions={suggestions} />
     </div>
   );
 }
