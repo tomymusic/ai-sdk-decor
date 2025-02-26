@@ -40,9 +40,9 @@ export const Header = () => {
               target="_blank"
             >
               <SparklesIcon />
-              AI SDK
+              Decor
             </Link>
-            Image Generator
+            AI
           </h1>
         </div>
         <Link
