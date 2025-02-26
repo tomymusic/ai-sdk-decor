@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     const config = providerConfig["replicate"];
     const startstamp = performance.now();
     const generatePromise = generateImage({
-      model: config.createImageModel("854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b"),
+      model: config.createImageModel(modelId),
       prompt,
       image: uploadedImage,
       size: DEFAULT_IMAGE_SIZE,
