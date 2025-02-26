@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
@@ -12,11 +12,19 @@ export default function ImageUploader() {
   const [loading, setLoading] = useState<boolean>(false);
   const [outputImage, setOutputImage] = useState<string | null>(null);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedImage(file);
       setPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleChooseFile = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
 
@@ -43,17 +51,22 @@ export default function ImageUploader() {
 
   return (
     <div className="flex flex-col items-center justify-center space-y-4">
-      <label className="w-full max-w-sm">
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="hidden"
-        />
-        <Button className="w-full bg-black text-white hover:bg-gray-800">
-          Choose File
-        </Button>
-      </label>
+      {/* Hidden File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+        className="hidden"
+      />
+
+      {/* Clickable Button That Opens File Picker */}
+      <Button
+        onClick={handleChooseFile}
+        className="w-full max-w-sm bg-black text-white hover:bg-gray-800"
+      >
+        Choose File
+      </Button>
 
       <Button
         onClick={handleSubmit}
