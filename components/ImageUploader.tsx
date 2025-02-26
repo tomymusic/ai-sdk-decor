@@ -22,14 +22,13 @@ export default function ImageUploader() {
   };
 
   const handleSubmit = async () => {
-    if (!selectedImage && !textPrompt) {
-      alert("Please enter a prompt or upload an image.");
+    if (!selectedImage) {
+      alert("Please upload an image.");
       return;
     }
     setLoading(true);
     const formData = new FormData();
-    if (selectedImage) formData.append("image", selectedImage);
-    if (textPrompt) formData.append("prompt", textPrompt);
+    formData.append("image", selectedImage);
 
     try {
       const response = await axios.post("/api/generate", formData, {
