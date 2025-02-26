@@ -2,7 +2,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ImageDisplay } from "./ImageDisplay";
-import { ImageCarousel } from "@/components/ImageCarousel";
 import { GeneratedImage, ImageError, ProviderTiming } from "@/lib/image-types";
 
 interface ImageGeneratorProps {
@@ -37,7 +36,7 @@ export function ImageGenerator({ images, errors, timings, toggleView }: ImageGen
       </div>
 
       {/* Mostrar solo la imagen generada por Replicate */}
-      {replicateImage && (
+      {replicateImage ? (
         <ImageDisplay
           provider="replicate"
           image={replicateImage.image}
@@ -46,6 +45,8 @@ export function ImageGenerator({ images, errors, timings, toggleView }: ImageGen
           enabled={true}
           modelId={replicateImage.modelId}
         />
+      ) : (
+        <p className="text-center text-gray-500">No image generated yet.</p>
       )}
     </div>
   );
