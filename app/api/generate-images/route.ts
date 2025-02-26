@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     const startstamp = performance.now();
 
     const generatePromise = replicate.image(modelId, {
-      input_image: `data:image/png;base64,${imageBase64}`, // ✅ Corrección aquí
+      image: `data:image/png;base64,${imageBase64}`, // ✅ Corrección aquí
       prompt,
     }).then((output) => {
       console.log(
