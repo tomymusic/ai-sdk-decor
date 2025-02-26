@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { experimental_generateImage as generateImage } from "ai";
+import { experimental_generateImage as generateImage } from "ai"; // ✅ Corregido
 import { replicate } from "@ai-sdk/replicate";
-import { MODEL_CONFIGS } from "@/lib/provider-config"; // ✅ Importación correcta
+import { MODEL_CONFIGS } from "@/lib/provider-config"; // ✅ Se mantiene la importación
 
 const TIMEOUT_MILLIS = 55 * 1000;
 
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     const imageArrayBuffer = await uploadedImage.arrayBuffer();
     const imageBase64 = Buffer.from(imageArrayBuffer).toString("base64");
 
-    const modelId = MODEL_CONFIGS.performance.replicate; // ✅ Corrección aquí
+    const modelId = MODEL_CONFIGS.performance.replicate; // ✅ Se usa el modelId correcto
     const startstamp = performance.now();
 
     const generatePromise = generateImage({
