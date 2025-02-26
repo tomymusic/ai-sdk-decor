@@ -6,7 +6,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 
 export default function ImageUploader() {
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -14,7 +13,6 @@ export default function ImageUploader() {
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setSelectedImage(file);
       setPreview(URL.createObjectURL(file));
     }
   };
