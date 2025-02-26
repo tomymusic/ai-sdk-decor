@@ -43,16 +43,16 @@ export default function ImageUploader() {
 
   return (
     <div className="flex flex-col items-center justify-center space-y-4">
-      <label className="cursor-pointer w-full max-w-sm">
+      <label className="w-full max-w-sm">
         <input
           type="file"
           accept="image/*"
           onChange={handleImageChange}
           className="hidden"
         />
-        <div className="flex items-center justify-center w-full p-3 border border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100">
+        <Button className="w-full bg-black text-white hover:bg-gray-800">
           Choose File
-        </div>
+        </Button>
       </label>
 
       <Button
