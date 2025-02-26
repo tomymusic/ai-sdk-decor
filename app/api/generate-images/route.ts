@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
 
 
   try {
-    if (!prompt || !modelId) {
+    if (!prompt || !uploadedImage) {
       const error = "Invalid request parameters";
       console.error(`${error} [requestId=${requestId}]`);
       return NextResponse.json({ error }, { status: 400 });
