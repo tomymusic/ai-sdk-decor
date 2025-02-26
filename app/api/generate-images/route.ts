@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     const generatePromise = generateImage({
       model: config.createImageModel(modelId),
       prompt,
-      image: uploadedImage,
+      input_image: uploadedImage,
       size: DEFAULT_IMAGE_SIZE,
       seed: Math.floor(Math.random() * 1000000),
     }).then(({ image, warnings }) => {
