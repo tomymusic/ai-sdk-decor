@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { ImageModel, experimental_generateImage as generateImage } from "ai";
 import { replicate } from "@ai-sdk/replicate";
 import { ProviderKey } from "@/lib/provider-config";
-import { GenerateImageRequest } from "@/lib/api-types";
 
 /**
  * Intended to be slightly less than the maximum execution time allowed by the
