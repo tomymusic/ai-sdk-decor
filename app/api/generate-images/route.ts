@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ImageModel, experimental_generateImage as generateImage } from "ai";
+import { experimental_generateImage as generateImage } from "ai";
 import { replicate } from "@ai-sdk/replicate";
 import { MODEL_CONFIGS } from "@/lib/provider-config"; // ✅ Importación correcta
 
