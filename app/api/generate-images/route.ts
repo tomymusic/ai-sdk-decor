@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { experimental_generateImage as generateImage } from "ai";
 import { replicate } from "@ai-sdk/replicate";
 import { MODEL_CONFIGS } from "@/lib/provider-config";
 
@@ -37,19 +36,12 @@ export async function POST(req: NextRequest) {
     const modelId = MODEL_CONFIGS.performance.replicate;
     const startstamp = performance.now();
 
-    const generatePromise = generateImage({
-      model: replicate.image(modelId),
-      prompt,
-      image: `data:image/png;base64,${imageBase64}`, // 🔥 Cambio aquí según Replicate
-      size: "1024x1024",
-      seed: Math.floor(Math.random() * 1000000),
-    }).then(({ image, warnings }) => {
-      if (warnings?.length > 0) {
-        console.warn(
-          `Warnings [requestId=${requestId}, model=${modelId}]: `,
-          warnings
-        );
-      }
+    const generatePromise = replicate.run(modelId, {
+      input: {
+        image: `data:image/png;base64,${imageBase64}`, // ✅ Corrección aquí
+        prompt,
+      },
+    }).then((output) => {
       console.log(
         `Completed image request [requestId=${requestId}, model=${modelId}, elapsed=${(
           (performance.now() - startstamp) /
@@ -59,7 +51,7 @@ export async function POST(req: NextRequest) {
 
       return {
         provider: "replicate",
-        image: image.base64,
+        image: output[0], // 🔥 El modelo de Replicate devuelve un array de imágenes
       };
     });
 
