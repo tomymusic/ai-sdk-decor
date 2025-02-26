@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     const startstamp = performance.now();
 
     const generatePromise = replicate.image(modelId, {
-      image: `data:image/png;base64,${imageBase64}`, // ✅ Corrección aquí
+      input_image: `data:image/png;base64,${imageBase64}`, // ✅ Corrección aquí
       prompt,
     }).then((output) => {
       console.log(
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
       return {
         provider: "replicate",
-        image: output[0], // 🔥 El modelo de Replicate devuelve un array de imágenes
+        image: output[1], // 🔥 El modelo de Replicate devuelve un array de imágenes
       };
     });
 
