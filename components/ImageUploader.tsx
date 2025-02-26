@@ -1,3 +1,5 @@
+export default function ImageUploader() {
+  
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
