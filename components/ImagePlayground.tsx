@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ModelSelect } from "@/components/ModelSelect";
+import ImageUploader from "@/components/ImageUploader";
 import { PromptInput } from "@/components/PromptInput";
 import { ModelCardCarousel } from "@/components/ModelCardCarousel";
 import {
@@ -75,6 +76,7 @@ export function ImagePlayground({
     <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <Header />
+        <ImageUploader /> {/* Move ImageUploader above the prompt input */}
         <PromptInput
           onSubmit={handlePromptSubmit}
           isLoading={isLoading}
