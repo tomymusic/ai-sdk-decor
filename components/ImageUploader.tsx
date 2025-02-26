@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import Input from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import axios from "axios";
@@ -43,25 +42,44 @@ export default function ImageUploader() {
   };
 
   return (
-    <div className="p-4 space-y-4">
-      <Input type="file" accept="image/*" onChange={handleImageChange} />
-      {preview && (
-        <Card>
-          <CardContent>
-            <Image src={preview} alt="Preview" width={500} height={500} />
-          </CardContent>
-        </Card>
-      )}
-      <Button onClick={handleSubmit} disabled={loading}>
-        {loading ? "Generating..." : "Submit"}
-      </Button>
-      {outputImage && (
-        <Card>
-          <CardContent>
-            <Image src={outputImage} alt="Output" width={500} height={500} />
-          </CardContent>
-        </Card>
-      )}
+    <div className="w-full max-w-lg mx-auto bg-white shadow-lg rounded-xl p-4">
+      <div className="flex flex-col items-center justify-center space-y-4">
+        <label className="cursor-pointer w-full">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
+          />
+          <div className="flex items-center justify-center w-full p-3 border border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100">
+            Choose File
+          </div>
+        </label>
+
+        {preview && (
+          <Card className="w-full">
+            <CardContent className="flex justify-center p-4">
+              <Image src={preview} alt="Preview" width={300} height={300} className="rounded-lg" />
+            </CardContent>
+          </Card>
+        )}
+
+        <Button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="w-full bg-black text-white hover:bg-gray-800"
+        >
+          {loading ? "Generating..." : "Submit"}
+        </Button>
+
+        {outputImage && (
+          <Card className="w-full">
+            <CardContent className="flex justify-center p-4">
+              <Image src={outputImage} alt="Output" width={300} height={300} className="rounded-lg" />
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }
