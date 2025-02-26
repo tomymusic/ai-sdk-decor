@@ -4,12 +4,10 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
-import axios from "axios";
 
 export default function ImageUploader() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [outputImage, setOutputImage] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -50,14 +48,6 @@ export default function ImageUploader() {
         <Card className="w-full max-w-sm">
           <CardContent className="flex justify-center p-4">
             <Image src={preview} alt="Preview" width={300} height={300} className="rounded-lg" />
-          </CardContent>
-        </Card>
-      )}
-
-      {outputImage && (
-        <Card className="w-full max-w-sm">
-          <CardContent className="flex justify-center p-4">
-            <Image src={outputImage} alt="Output" width={300} height={300} className="rounded-lg" />
           </CardContent>
         </Card>
       )}
