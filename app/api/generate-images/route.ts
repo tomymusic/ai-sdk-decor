@@ -38,7 +38,10 @@ const withTimeout = <T>(
 
 export async function POST(req: NextRequest) {
   const requestId = Math.random().toString(36).substring(7);
-  const { prompt, modelId } = (await req.json()) as GenerateImageRequest;
+  const formData = await req.formData();
+  const prompt = formData.get("prompt") as string;
+  const uploadedImage = formData.get("image") as File;
+
 
   try {
     if (!prompt || !modelId) {
