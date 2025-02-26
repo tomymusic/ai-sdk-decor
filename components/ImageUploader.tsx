@@ -8,7 +8,6 @@ import Image from "next/image";
 import axios from "axios";
 
 export default function ImageUploader() {
-  const [textPrompt, setTextPrompt] = useState<string>("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
