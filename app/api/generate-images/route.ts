@@ -40,8 +40,8 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const prompt = formData.get("prompt") as string;
   const uploadedImage = formData.get("image") as File;
-
-
+  const modelId = formData.get("modelId") as string;
+  
   try {
     if (!prompt || !uploadedImage) {
       const error = "Invalid request parameters";
