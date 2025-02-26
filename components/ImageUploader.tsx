@@ -1,54 +1,52 @@
-export default function ImageUploader() {
-  
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Settings } from "lucide-react";
+"use client";
+
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { ImageDisplay } from "./ImageDisplay";
-import { GeneratedImage, ImageError, ProviderTiming } from "@/lib/image-types";
+import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
 
-interface ImageGeneratorProps {
-  images: GeneratedImage[];
-  errors: ImageError[];
-  timings: Record<string, ProviderTiming>;
-  toggleView: () => void;
-}
+export default function ImageUploader() {
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-export function ImageGenerator({ images, errors, timings, toggleView }: ImageGeneratorProps) {
-  // Buscar la imagen generada por Replicate
-  const replicateImage = images.find((img) => img.provider === "replicate");
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleChooseFile = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Renderizar errores si hay */}
-      {errors.length > 0 && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <div className="ml-3">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{errors[0].message}</AlertDescription>
-          </div>
-        </Alert>
-      )}
+    <div className="flex flex-col items-center justify-center space-y-4">
+      {/* Hidden File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+        className="hidden"
+      />
 
-      <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold">Generated Image</h3>
-        <Button variant="outline" onClick={toggleView} size="icon">
-          <Settings className="h-4 w-4" />
-        </Button>
-      </div>
+      {/* Clickable Button That Opens File Picker */}
+      <Button
+        onClick={handleChooseFile}
+        className="w-full max-w-sm bg-black text-white hover:bg-gray-800"
+      >
+        Choose File
+      </Button>
 
-      {/* Mostrar solo la imagen generada por Replicate */}
-      {replicateImage ? (
-        <ImageDisplay
-          provider="replicate"
-          image={replicateImage.image}
-          timing={timings["replicate"]}
-          failed={false}
-          enabled={true}
-          modelId={replicateImage.modelId}
-        />
-      ) : (
-        <p className="text-center text-gray-500">No image generated yet.</p>
+      {preview && (
+        <Card className="w-full max-w-sm">
+          <CardContent className="flex justify-center p-4">
+            <Image src={preview} alt="Preview" width={300} height={300} className="rounded-lg" />
+          </CardContent>
+        </Card>
       )}
     </div>
   );
