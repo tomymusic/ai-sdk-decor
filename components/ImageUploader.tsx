@@ -42,44 +42,42 @@ export default function ImageUploader() {
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto bg-white shadow-lg rounded-xl p-4">
-      <div className="flex flex-col items-center justify-center space-y-4">
-        <label className="cursor-pointer w-full">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="hidden"
-          />
-          <div className="flex items-center justify-center w-full p-3 border border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100">
-            Choose File
-          </div>
-        </label>
+    <div className="flex flex-col items-center justify-center space-y-4">
+      <label className="cursor-pointer w-full max-w-sm">
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="hidden"
+        />
+        <div className="flex items-center justify-center w-full p-3 border border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100">
+          Choose File
+        </div>
+      </label>
 
-        {preview && (
-          <Card className="w-full">
-            <CardContent className="flex justify-center p-4">
-              <Image src={preview} alt="Preview" width={300} height={300} className="rounded-lg" />
-            </CardContent>
-          </Card>
-        )}
+      <Button
+        onClick={handleSubmit}
+        disabled={loading}
+        className="w-full max-w-sm bg-black text-white hover:bg-gray-800"
+      >
+        {loading ? "Generating..." : "Submit"}
+      </Button>
 
-        <Button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="w-full bg-black text-white hover:bg-gray-800"
-        >
-          {loading ? "Generating..." : "Submit"}
-        </Button>
+      {preview && (
+        <Card className="w-full max-w-sm">
+          <CardContent className="flex justify-center p-4">
+            <Image src={preview} alt="Preview" width={300} height={300} className="rounded-lg" />
+          </CardContent>
+        </Card>
+      )}
 
-        {outputImage && (
-          <Card className="w-full">
-            <CardContent className="flex justify-center p-4">
-              <Image src={outputImage} alt="Output" width={300} height={300} className="rounded-lg" />
-            </CardContent>
-          </Card>
-        )}
-      </div>
+      {outputImage && (
+        <Card className="w-full max-w-sm">
+          <CardContent className="flex justify-center p-4">
+            <Image src={outputImage} alt="Output" width={300} height={300} className="rounded-lg" />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
