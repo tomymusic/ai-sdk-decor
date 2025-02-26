@@ -46,12 +46,6 @@ export default function ImageUploader() {
 
   return (
     <div className="p-4 space-y-4">
-      <Input
-        type="text"
-        placeholder="Enter text prompt"
-        value={textPrompt}
-        onChange={(e) => setTextPrompt(e.target.value)}
-      />
       <Input type="file" accept="image/*" onChange={handleImageChange} />
       {preview && (
         <Card>
