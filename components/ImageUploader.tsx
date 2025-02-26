@@ -2,19 +2,20 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import Input from "@/components/ui/Input"; // Verifica que la importación sea correcta
 import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
 import axios from "axios";
 
 export default function ImageUploader() {
-  const [textPrompt, setTextPrompt] = useState("");
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [outputImage, setOutputImage] = useState(null);
+  const [textPrompt, setTextPrompt] = useState<string>("");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [outputImage, setOutputImage] = useState<string | null>(null);
 
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       setSelectedImage(file);
       setPreview(URL.createObjectURL(file));
@@ -55,7 +56,7 @@ export default function ImageUploader() {
       {preview && (
         <Card>
           <CardContent>
-            <img src={preview} alt="Preview" className="w-full h-auto" />
+            <Image src={preview} alt="Preview" width={500} height={500} />
           </CardContent>
         </Card>
       )}
@@ -65,7 +66,7 @@ export default function ImageUploader() {
       {outputImage && (
         <Card>
           <CardContent>
-            <img src={outputImage} alt="Output" className="w-full h-auto" />
+            <Image src={outputImage} alt="Output" width={500} height={500} />
           </CardContent>
         </Card>
       )}
