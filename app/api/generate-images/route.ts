@@ -4,9 +4,9 @@ import { MODEL_CONFIGS } from "@/lib/provider-config";
 
 const TIMEOUT_MILLIS = 55 * 1000;
 
-// Inicializar Replicate con API Key desde variables de entorno
+// 🔥 Inicializa Replicate con el token directo (sin process.env)
 const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN, // Asegúrate de configurar esta variable en tu entorno
+  auth: REPLICATE_API_TOKEN, // ✅ Ajustado según tu configuración
 });
 
 // Función para manejar el timeout
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     // 🔥 Llamar a Replicate con el formato correcto
     const generatePromise = replicate.run(modelId, {
       input: {
-        image: `data:image/png;base64,${imageBase64}`, // 🔥 Intenta cambiar a "input_image" si hay errores
+        input_image: `data:image/png;base64,${imageBase64}`, // 🔥 Algunos modelos requieren "input_image"
         prompt: prompt,
       },
     }).then((output) => {
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
 
       return {
         provider: "replicate",
-        image: output, // 🔥 Dependiendo del modelo, puede ser un array o una URL
+        image: Array.isArray(output) ? output[0] : output, // 🔥 Ajustado según el tipo de respuesta
       };
     });
 
