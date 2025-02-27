@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "axios": "^1.7.9",
+    "formidable": "^3.5.2",
     "@ai-sdk/fireworks": "^0.1.0",
     "@ai-sdk/google-vertex": "^2.1.0",
     "@ai-sdk/openai": "^1.1.0",
