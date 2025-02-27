@@ -5,8 +5,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
-type QualityMode = "performance" | "quality";
-
 interface PromptInputProps {
   onSubmit: (prompt: string) => void;
   isLoading?: boolean;
@@ -26,6 +24,7 @@ export function PromptInput({
   const updateSuggestions = () => {
     setSuggestions(getRandomSuggestions());
   };
+
   const handleSuggestionSelect = (prompt: string) => {
     setInput(prompt);
     onSubmit(prompt);
@@ -36,10 +35,6 @@ export function PromptInput({
       onSubmit(input);
     }
   };
-
-  // const handleRefreshSuggestions = () => {
-  //   setCurrentSuggestions(getRandomSuggestions());
-  // };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
