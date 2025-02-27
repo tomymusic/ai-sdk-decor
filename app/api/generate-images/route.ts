@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
         const data = await response.json();
         resolve(new NextResponse(JSON.stringify({ image_url: data.output }), { status: 200 }));
-      } catch (error) {
+      } catch {
         resolve(new NextResponse(JSON.stringify({ error: "Failed to generate image" }), { status: 500 }));
       }
     });
