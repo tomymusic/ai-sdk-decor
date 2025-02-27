@@ -12,8 +12,6 @@ interface PromptInputProps {
   isLoading?: boolean;
   showProviders: boolean;
   onToggleProviders: () => void;
-  mode: QualityMode;
-  onModeChange: (mode: QualityMode) => void;
   suggestions: Suggestion[];
 }
 
