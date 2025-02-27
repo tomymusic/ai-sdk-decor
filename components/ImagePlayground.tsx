@@ -4,6 +4,7 @@ import PromptInput from "@/components/PromptInput"; // ✅ Se corrigió la impor
 import { Suggestion } from "@/lib/suggestions";
 import { useImageGeneration } from "@/hooks/use-image-generation";
 import { Header } from "./Header";
+import { PROVIDER_ORDER } from "@/lib/provider-config";
 
 export function ImagePlayground({
   suggestions,
