@@ -36,9 +36,12 @@ export async function POST(req: NextRequest) {
     const modelId = MODEL_CONFIGS.performance.replicate;
     const startstamp = performance.now();
 
-    const generatePromise = replicate.image(modelId, {
-      image: `data:image/png;base64,${imageBase64}`, // ✅ Corrección aquí
-      prompt,
+    // 🔥 CORRECCIÓN: Usar replicate.run en lugar de replicate.image
+    const generatePromise = replicate.run(modelId, {
+      input: {
+        image: `data:image/png;base64,${imageBase64}`, // ✅ Imagen en Base64 en el campo correcto
+        prompt,
+      },
     }).then((output) => {
       console.log(
         `Completed image request [requestId=${requestId}, model=${modelId}, elapsed=${(
@@ -49,7 +52,7 @@ export async function POST(req: NextRequest) {
 
       return {
         provider: "replicate",
-        image: output[1], // 🔥 El modelo de Replicate devuelve un array de imágenes
+        image: output[0], // 🔥 Corregido: Acceder correctamente a la imagen generada
       };
     });
 
