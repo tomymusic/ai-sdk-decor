@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ModelSelect } from "@/components/ModelSelect";
 import { PromptInput } from "@/components/PromptInput";
 import { ModelCardCarousel } from "@/components/ModelCardCarousel";
 import {
@@ -30,12 +29,10 @@ export function ImagePlayground({
   } = useImageGeneration();
 
   const [showProviders, setShowProviders] = useState(true);
-  const [selectedModels, setSelectedModels] = useState<
-    Record<ProviderKey, string>
-  >(MODEL_CONFIGS.performance);
-  const [enabledProviders, setEnabledProviders] = useState(
-    initializeProviderRecord(true),
+  const [selectedModels, setSelectedModels] = useState<Record<ProviderKey, string>>(
+    MODEL_CONFIGS.performance
   );
+  const [enabledProviders, setEnabledProviders] = useState(initializeProviderRecord(true));
 
   const toggleView = () => {
     setShowProviders((prev) => !prev);
@@ -73,7 +70,7 @@ export function ImagePlayground({
           isLoading={isLoading}
           showProviders={showProviders}
           onToggleProviders={toggleView}
-          suggestions={suggestions} // 🔥 Se eliminaron mode y onModeChange
+          suggestions={suggestions} 
         />
         <>
           {(() => {
@@ -109,12 +106,7 @@ export function ImagePlayground({
                 <div className="md:hidden">
                   <ModelCardCarousel models={getModelProps()} />
                 </div>
-                <div className="hidden md:grid md:grid-cols-2 2xl:grid-cols-4 gap-8">
-                  {getModelProps().map((props) => (
-                    <ModelSelect key={props.label} {...props} />
-                  ))}
-                </div>
-                {activePrompt && activePrompt.length > 0 && (
+                {activePrompt && (
                   <div className="text-center mt-4 text-muted-foreground">
                     {activePrompt}
                   </div>
