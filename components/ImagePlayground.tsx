@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PromptInput } from "@/components/PromptInput";
 import { Header } from "@/components/Header";
 import { ImageUploader } from "@/components/ImageUploader";
+import Image from "next/image";
 
 export function ImagePlayground() {
   const [image, setImage] = useState<File | null>(null);
@@ -44,7 +45,9 @@ export function ImagePlayground() {
         {generatedImage && (
           <div className="mt-6">
             <h2 className="text-center text-lg font-semibold">Generated Image</h2>
-            <img src={generatedImage} alt="Generated" className="mt-4 w-full rounded-lg" />
+            <div className="mt-4 w-full rounded-lg overflow-hidden">
+              <Image src={generatedImage} alt="Generated" width={600} height={400} className="rounded-lg" />
+            </div>
           </div>
         )}
       </div>
