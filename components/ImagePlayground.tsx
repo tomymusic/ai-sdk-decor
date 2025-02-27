@@ -4,7 +4,6 @@ import { useState } from "react";
 import { PromptInput } from "@/components/PromptInput";
 import {
   PROVIDER_ORDER,
-  ProviderKey,
   initializeProviderRecord,
 } from "@/lib/provider-config";
 import { Suggestion } from "@/lib/suggestions";
