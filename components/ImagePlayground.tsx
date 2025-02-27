@@ -73,7 +73,7 @@ export function ImagePlayground({
           isLoading={isLoading}
           showProviders={showProviders}
           onToggleProviders={toggleView}
-          suggestions={suggestions}
+          suggestions={suggestions} // 🔥 Se eliminaron mode y onModeChange
         />
         <>
           {(() => {
