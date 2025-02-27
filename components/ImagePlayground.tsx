@@ -22,10 +22,6 @@ export function ImagePlayground({ suggestions }: { suggestions: Suggestion[] }) 
 
   const toggleView = () => setShowProviders((prev) => !prev);
 
-  const handleProviderToggle = (provider: string, enabled: boolean) => {
-    setEnabledProviders((prev) => ({ ...prev, [provider]: enabled }));
-  };
-
   const handlePromptSubmit = (newPrompt: string) => {
     const activeProviders = PROVIDER_ORDER.filter((p) => enabledProviders[p]);
     if (activeProviders.length > 0) {
