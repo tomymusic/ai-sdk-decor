@@ -25,6 +25,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         return;
       }
 
+      console.log("Solicitud recibida en la API");
+      console.log("Prompt:", fields.prompt);
+      console.log("Archivos recibidos:", files);
+
       const prompt = fields.prompt?.[0] || "";
       const imageFile = files.image?.[0];
 
