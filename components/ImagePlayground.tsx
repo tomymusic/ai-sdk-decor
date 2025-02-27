@@ -39,7 +39,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     formData.append("prompt", prompt);
 
     try {
-      const response = await fetch("/api/generate", {
+      const response = await fetch("/api/generate-images", {
         method: "POST",
         body: formData,
       });
