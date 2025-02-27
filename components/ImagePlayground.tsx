@@ -12,7 +12,6 @@ import { Header } from "./Header";
 
 export function ImagePlayground({ suggestions }: { suggestions: Suggestion[] }) {
   const {
-    images,
     isLoading,
     startGeneration,
     activePrompt,
