@@ -1,4 +1,3 @@
-"use client";
 
 import { useState } from "react";
 import { ArrowUpRight, ArrowUp, RefreshCw } from "lucide-react";
@@ -7,13 +6,19 @@ import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
+type QualityMode = "performance" | "quality";
+
 interface PromptInputProps {
   onSubmit: (prompt: string) => void;
   isLoading?: boolean;
+  showProviders: boolean;
+  onToggleProviders: () => void;
+  mode: QualityMode;
+  onModeChange: (mode: QualityMode) => void;
   suggestions: Suggestion[];
 }
 
-export default function PromptInput({
+export function PromptInput({
   suggestions: initSuggestions,
   isLoading,
   onSubmit,
@@ -24,6 +29,10 @@ export default function PromptInput({
   const updateSuggestions = () => {
     setSuggestions(getRandomSuggestions());
   };
+  const handleSuggestionSelect = (prompt: string) => {
+    setInput(prompt);
+    onSubmit(prompt);
+  };
 
   const handleSubmit = () => {
     if (!isLoading && input.trim()) {
@@ -31,10 +40,16 @@ export default function PromptInput({
     }
   };
 
+  // const handleRefreshSuggestions = () => {
+  //   setCurrentSuggestions(getRandomSuggestions());
+  // };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit();
+      if (!isLoading && input.trim()) {
+        onSubmit(input);
+      }
     }
   };
 
@@ -61,14 +76,20 @@ export default function PromptInput({
               {suggestions.map((suggestion, index) => (
                 <button
                   key={index}
-                  onClick={() => setInput(suggestion.prompt)}
+                  onClick={() => handleSuggestionSelect(suggestion.prompt)}
                   className={cn(
                     "flex items-center justify-between px-2 rounded-lg py-1 bg-background text-sm hover:opacity-70 group transition-opacity duration-200",
-                    index > 2 ? "hidden md:flex" : index > 1 ? "hidden sm:flex" : ""
+                    index > 2
+                      ? "hidden md:flex"
+                      : index > 1
+                        ? "hidden sm:flex"
+                        : "",
                   )}
                 >
-                  <span className="text-black text-xs sm:text-sm">
-                    {suggestion.text.toLowerCase()}
+                  <span>
+                    <span className="text-black text-xs sm:text-sm">
+                      {suggestion.text.toLowerCase()}
+                    </span>
                   </span>
                   <ArrowUpRight className="ml-1 h-2 w-2 sm:h-3 sm:w-3 text-zinc-500 group-hover:opacity-70" />
                 </button>
@@ -79,7 +100,11 @@ export default function PromptInput({
               disabled={isLoading || !input.trim()}
               className="h-8 w-8 rounded-full bg-black flex items-center justify-center disabled:opacity-50"
             >
-              {isLoading ? <Spinner className="w-3 h-3 text-white" /> : <ArrowUp className="w-5 h-5 text-white" />}
+              {isLoading ? (
+                <Spinner className="w-3 h-3 text-white" />
+              ) : (
+                <ArrowUp className="w-5 h-5 text-white" />
+              )}
             </button>
           </div>
         </div>
