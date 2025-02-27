@@ -15,6 +15,17 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
   const [image, setImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [showProviders, setShowProviders] = useState(true);
+  const [mode, setMode] = useState<"performance" | "quality">("performance");
+
+  const toggleView = () => {
+    setShowProviders((prev) => !prev);
+  };
+
+  const handleModeChange = (newMode: "performance" | "quality") => {
+    setMode(newMode);
+    setShowProviders(true);
+  };
 
   const handleSubmit = async (prompt: string) => {
     if (!image) {
@@ -46,7 +57,15 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
       <div className="max-w-7xl mx-auto">
         <Header />
         <ImageUploader onImageUpload={setImage} />
-        <PromptInput onSubmit={handleSubmit} isLoading={isLoading} suggestions={suggestions} />
+        <PromptInput
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+          suggestions={suggestions}
+          showProviders={showProviders}
+          onToggleProviders={toggleView}
+          mode={mode}
+          onModeChange={handleModeChange}
+        />
         {generatedImage && (
           <div className="mt-6">
             <h2 className="text-center text-lg font-semibold">Generated Image</h2>
