@@ -9,7 +9,6 @@ import {
   PROVIDERS,
   PROVIDER_ORDER,
   ProviderKey,
-  ModelMode,
   initializeProviderRecord,
 } from "@/lib/provider-config";
 import { Suggestion } from "@/lib/suggestions";
@@ -37,15 +36,9 @@ export function ImagePlayground({
   const [enabledProviders, setEnabledProviders] = useState(
     initializeProviderRecord(true),
   );
-  const [mode, setMode] = useState<ModelMode>("performance");
+
   const toggleView = () => {
     setShowProviders((prev) => !prev);
-  };
-
-  const handleModeChange = (newMode: ModelMode) => {
-    setMode(newMode);
-    setSelectedModels(MODEL_CONFIGS[newMode]);
-    setShowProviders(true);
   };
 
   const handleModelChange = (providerKey: ProviderKey, model: string) => {
@@ -61,9 +54,6 @@ export function ImagePlayground({
 
   const providerToModel = {
     replicate: selectedModels.replicate,
-    vertex: selectedModels.vertex,
-    openai: selectedModels.openai,
-    fireworks: selectedModels.fireworks,
   };
 
   const handlePromptSubmit = (newPrompt: string) => {
@@ -83,8 +73,6 @@ export function ImagePlayground({
           isLoading={isLoading}
           showProviders={showProviders}
           onToggleProviders={toggleView}
-          mode={mode}
-          onModeChange={handleModeChange}
           suggestions={suggestions}
         />
         <>
