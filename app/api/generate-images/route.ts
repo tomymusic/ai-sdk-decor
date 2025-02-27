@@ -57,6 +57,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         });
 
         const data = await response.json();
+        console.log("Respuesta de Replicate:", data);
         resolve(new NextResponse(JSON.stringify({ image_url: data.output }), { status: 200 }));
       } catch {
         resolve(new NextResponse(JSON.stringify({ error: "Failed to generate image" }), { status: 500 }));
