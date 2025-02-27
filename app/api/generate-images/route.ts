@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { replicate } from "@ai-sdk/replicate";
+import Replicate from "replicate";
 import { MODEL_CONFIGS } from "@/lib/provider-config";
 
 const TIMEOUT_MILLIS = 55 * 1000;
 
+// Inicializar Replicate con API Key desde variables de entorno
+const replicate = new Replicate({
+  auth: process.env.REPLICATE_API_TOKEN, // Asegúrate de configurar esta variable en tu entorno
+});
+
+// Función para manejar el timeout
 const withTimeout = <T>(
   promise: Promise<T>,
   timeoutMillis: number
@@ -16,6 +22,7 @@ const withTimeout = <T>(
   ]);
 };
 
+// Función principal para manejar las solicitudes POST
 export async function POST(req: NextRequest) {
   const requestId = Math.random().toString(36).substring(7);
   const formData = await req.formData();
@@ -33,14 +40,15 @@ export async function POST(req: NextRequest) {
     const imageArrayBuffer = await uploadedImage.arrayBuffer();
     const imageBase64 = Buffer.from(imageArrayBuffer).toString("base64");
 
+    // Seleccionar el modelo correcto de Replicate
     const modelId = MODEL_CONFIGS.performance.replicate;
     const startstamp = performance.now();
 
-    // 🔥 Cambio aquí: Usamos replicate.fetch en vez de replicate.run
-    const generatePromise = replicate.fetch(modelId, {
+    // 🔥 Llamar a Replicate con el formato correcto
+    const generatePromise = replicate.run(modelId, {
       input: {
-        image: `data:image/png;base64,${imageBase64}`, // ✅ Imagen en Base64 en el campo correcto
-        prompt,
+        image: `data:image/png;base64,${imageBase64}`, // 🔥 Intenta cambiar a "input_image" si hay errores
+        prompt: prompt,
       },
     }).then((output) => {
       console.log(
@@ -52,7 +60,7 @@ export async function POST(req: NextRequest) {
 
       return {
         provider: "replicate",
-        image: output[0], // ✅ Acceso correcto a la imagen generada
+        image: output, // 🔥 Dependiendo del modelo, puede ser un array o una URL
       };
     });
 
