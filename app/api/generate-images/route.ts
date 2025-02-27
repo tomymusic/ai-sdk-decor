@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import formidable from "formidable";
 import fs from "fs";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse> {
   const form = new formidable.IncomingForm();
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     form.parse(req, async (err, fields, files) => {
       if (err) {
-        reject(new NextResponse(JSON.stringify({ error: "Error parsing form data" }), { status: 500 }));
+        resolve(new NextResponse(JSON.stringify({ error: "Error parsing form data" }), { status: 500 }));
         return;
       }
 
