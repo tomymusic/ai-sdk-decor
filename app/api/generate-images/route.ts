@@ -2,16 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import formidable from "formidable";
 import fs from "fs";
 import { Readable } from "stream";
+import { IncomingMessage } from "http";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const form = new formidable.IncomingForm();
 
-  // Convert NextRequest to a readable stream
+  // Convert NextRequest to an IncomingMessage
   const reqBody = await req.arrayBuffer();
   const stream = Readable.from(Buffer.from(reqBody));
+  const incomingReq = Object.assign(new IncomingMessage(null as any), { headers: req.headers, url: req.url, method: req.method, socket: null, pipe: stream.pipe.bind(stream) });
 
   return new Promise((resolve) => {
-    form.parse(stream, async (err, fields, files) => {
+    form.parse(incomingReq, async (err, fields, files) => {
       if (err) {
         resolve(new NextResponse(JSON.stringify({ error: "Error parsing form data" }), { status: 500 }));
         return;
