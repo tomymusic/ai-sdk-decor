@@ -5,8 +5,13 @@ import { PromptInput } from "@/components/PromptInput";
 import { Header } from "@/components/Header";
 import { ImageUploader } from "@/components/ImageUploader";
 import Image from "next/image";
+import { Suggestion } from "@/lib/suggestions";
 
-export function ImagePlayground() {
+interface ImagePlaygroundProps {
+  suggestions?: Suggestion[];
+}
+
+export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
   const [image, setImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
@@ -41,7 +46,7 @@ export function ImagePlayground() {
       <div className="max-w-7xl mx-auto">
         <Header />
         <ImageUploader onImageUpload={setImage} />
-        <PromptInput onSubmit={handleSubmit} isLoading={isLoading} />
+        <PromptInput onSubmit={handleSubmit} isLoading={isLoading} suggestions={suggestions} />
         {generatedImage && (
           <div className="mt-6">
             <h2 className="text-center text-lg font-semibold">Generated Image</h2>
