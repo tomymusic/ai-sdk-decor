@@ -1,105 +1,68 @@
+"use client";
+
 import { useState } from "react";
-import { ArrowUpRight, ArrowUp, RefreshCw } from "lucide-react";
-import { getRandomSuggestions, Suggestion } from "@/lib/suggestions";
-import { Spinner } from "@/components/ui/spinner";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+import { PromptInput } from "@/components/PromptInput";
+import {
+  MODEL_CONFIGS,
+  PROVIDERS,
+  PROVIDER_ORDER,
+  ProviderKey,
+} from "@/lib/provider-config";
+import { Suggestion } from "@/lib/suggestions";
+import { useImageGeneration } from "@/hooks/use-image-generation";
+import { Header } from "./Header";
 
-interface PromptInputProps {
-  onSubmit: (prompt: string) => void;
-  isLoading?: boolean;
-  showProviders: boolean;
-  onToggleProviders: () => void;
+export function ImagePlayground({
+  suggestions,
+}: {
   suggestions: Suggestion[];
-}
+}) {
+  const {
+    images,
+    timings,
+    failedProviders,
+    isLoading,
+    startGeneration,
+    activePrompt,
+  } = useImageGeneration();
 
-export function PromptInput({
-  suggestions: initSuggestions,
-  isLoading,
-  onSubmit,
-}: PromptInputProps) {
-  const [input, setInput] = useState("");
-  const [suggestions, setSuggestions] = useState<Suggestion[]>(initSuggestions);
+  const [selectedModels, setSelectedModels] = useState<
+    Record<ProviderKey, string>
+  >(MODEL_CONFIGS.performance);
 
-  const updateSuggestions = () => {
-    setSuggestions(getRandomSuggestions());
+  const toggleView = () => {}; // 🔥 Se eliminó `setShowProviders` porque no es necesario
+
+  const handleModelChange = (providerKey: ProviderKey, model: string) => {
+    setSelectedModels((prev) => ({ ...prev, [providerKey]: model }));
   };
 
-  const handleSuggestionSelect = (prompt: string) => {
-    setInput(prompt);
-    onSubmit(prompt);
+  const providerToModel = {
+    replicate: selectedModels.replicate,
   };
 
-  const handleSubmit = () => {
-    if (!isLoading && input.trim()) {
-      onSubmit(input);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      if (!isLoading && input.trim()) {
-        onSubmit(input);
-      }
+  const handlePromptSubmit = (newPrompt: string) => {
+    const activeProviders = PROVIDER_ORDER; // 🔥 Eliminado `enabledProviders`, ahora usa todos los proveedores siempre
+    if (activeProviders.length > 0) {
+      startGeneration(newPrompt, activeProviders, providerToModel);
     }
   };
 
   return (
-    <div className="w-full mb-8">
-      <div className="bg-zinc-50 rounded-xl p-4">
-        <div className="flex flex-col gap-3">
-          <Textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Enter your prompt here"
-            rows={3}
-            className="text-base bg-transparent border-none p-0 resize-none placeholder:text-zinc-500 text-[#111111] focus-visible:ring-0 focus-visible:ring-offset-0"
-          />
-          <div className="flex items-center justify-between pt-1">
-            <div className="flex items-center justify-between space-x-2">
-              <button
-                onClick={updateSuggestions}
-                className="flex items-center justify-between px-2 rounded-lg py-1 bg-background text-sm hover:opacity-70 group transition-opacity duration-200"
-              >
-                <RefreshCw className="w-4 h-4 text-zinc-500 group-hover:opacity-70" />
-              </button>
-              {suggestions.map((suggestion, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleSuggestionSelect(suggestion.prompt)}
-                  className={cn(
-                    "flex items-center justify-between px-2 rounded-lg py-1 bg-background text-sm hover:opacity-70 group transition-opacity duration-200",
-                    index > 2
-                      ? "hidden md:flex"
-                      : index > 1
-                        ? "hidden sm:flex"
-                        : "",
-                  )}
-                >
-                  <span>
-                    <span className="text-black text-xs sm:text-sm">
-                      {suggestion.text.toLowerCase()}
-                    </span>
-                  </span>
-                  <ArrowUpRight className="ml-1 h-2 w-2 sm:h-3 sm:w-3 text-zinc-500 group-hover:opacity-70" />
-                </button>
-              ))}
-            </div>
-            <button
-              onClick={handleSubmit}
-              disabled={isLoading || !input.trim()}
-              className="h-8 w-8 rounded-full bg-black flex items-center justify-center disabled:opacity-50"
-            >
-              {isLoading ? (
-                <Spinner className="w-3 h-3 text-white" />
-              ) : (
-                <ArrowUp className="w-5 h-5 text-white" />
-              )}
-            </button>
+    <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <Header />
+        <PromptInput
+          onSubmit={handlePromptSubmit}
+          isLoading={isLoading}
+          showProviders={false} // 🔥 Se eliminó el estado de `showProviders`
+          onToggleProviders={toggleView}
+          suggestions={suggestions}
+        />
+        {activePrompt && (
+          <div className="text-center mt-4 text-muted-foreground">
+            {activePrompt}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
