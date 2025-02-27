@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 interface ImageUploaderProps {
   onImageUpload: (file: File | null) => void;
@@ -21,7 +22,11 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
     <div className="mb-6">
       <label className="block text-lg font-medium text-gray-700">Upload an Image</label>
       <input type="file" accept="image/*" onChange={handleImageChange} className="mt-2" />
-      {preview && <img src={preview} alt="Preview" className="mt-4 w-40 rounded-lg" />}
+      {preview && (
+        <div className="mt-4 w-40 rounded-lg overflow-hidden">
+          <Image src={preview} alt="Preview" width={160} height={160} className="rounded-lg" />
+        </div>
+      )}
     </div>
   );
 }
