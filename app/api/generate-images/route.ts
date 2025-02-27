@@ -36,10 +36,10 @@ export async function POST(req: NextRequest) {
     const modelId = MODEL_CONFIGS.performance.replicate;
     const startstamp = performance.now();
 
-    // 🔥 Cambio aquí: Usamos replicate.predict en vez de replicate.run
-    const generatePromise = replicate.predict(modelId, {
+    // 🔥 Cambio aquí: Usamos replicate.run en vez de replicate.image o replicate.predict
+    const generatePromise = replicate.run(modelId, {
       input: {
-        image: `data:image/png;base64,${imageBase64}`, // ✅ Imagen en Base64 en el campo correcto
+        image: `data:image/png;base64,${imageBase64}`, // ✅ Imagen en Base64
         prompt,
       },
     }).then((output) => {
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
 
       return {
         provider: "replicate",
-        image: output[0], // ✅ Corregido: Acceder correctamente a la imagen generada
+        image: output[0], // ✅ Acceso correcto a la imagen generada
       };
     });
 
