@@ -1,33 +1,36 @@
 "use client";
 
 import { useState } from "react";
-import { PromptInput } from "@/components/PromptInput";
+import PromptInput from "@/components/PromptInput"; // ✅ IMPORTACIÓN FIJA
 import {
+  MODEL_CONFIGS,
   PROVIDER_ORDER,
-  initializeProviderRecord,
+  ProviderKey,
 } from "@/lib/provider-config";
 import { Suggestion } from "@/lib/suggestions";
 import { useImageGeneration } from "@/hooks/use-image-generation";
 import { Header } from "./Header";
 
-export function ImagePlayground({ suggestions }: { suggestions: Suggestion[] }) {
+export function ImagePlayground({
+  suggestions,
+}: {
+  suggestions: Suggestion[];
+}) {
   const {
     isLoading,
     startGeneration,
     activePrompt,
-  } = useImageGeneration();
+  } = useImageGeneration(); // 🔥 Eliminado `images`, `timings`, `failedProviders`
 
-  const [showProviders, setShowProviders] = useState(true);
-  const [enabledProviders, setEnabledProviders] = useState(initializeProviderRecord(true));
-
-  const toggleView = () => setShowProviders((prev) => !prev);
+  const [selectedModels, setSelectedModels] = useState<
+    Record<ProviderKey, string>
+  >(MODEL_CONFIGS.performance);
 
   const handlePromptSubmit = (newPrompt: string) => {
-    const activeProviders = PROVIDER_ORDER.filter((p) => enabledProviders[p]);
+    const activeProviders = PROVIDER_ORDER;
     if (activeProviders.length > 0) {
-      startGeneration(newPrompt, activeProviders, {});
+      startGeneration(newPrompt, activeProviders, { replicate: selectedModels.replicate });
     }
-    setShowProviders(false);
   };
 
   return (
@@ -37,9 +40,9 @@ export function ImagePlayground({ suggestions }: { suggestions: Suggestion[] }) 
         <PromptInput
           onSubmit={handlePromptSubmit}
           isLoading={isLoading}
-          showProviders={showProviders}
-          onToggleProviders={toggleView}
-          suggestions={suggestions} 
+          showProviders={false} 
+          onToggleProviders={() => {}} 
+          suggestions={suggestions}
         />
         {activePrompt && (
           <div className="text-center mt-4 text-muted-foreground">
