@@ -13,8 +13,11 @@ export function ImagePlayground({
   const { isLoading, startGeneration, activePrompt } = useImageGeneration();
 
   const handlePromptSubmit = (newPrompt: string) => {
-    startGeneration(newPrompt);
-  };
+    const activeProviders = PROVIDER_ORDER; // 🔥 Usa todos los proveedores disponibles
+    const providerToModel = {}; // 🔥 Si no hay modelos configurables, pásalo vacío
+    startGeneration(newPrompt, activeProviders, providerToModel);
+};
+
 
   return (
     <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
