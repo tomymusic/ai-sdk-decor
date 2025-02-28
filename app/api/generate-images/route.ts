@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import formidable from "formidable";
 import { readFile } from "fs/promises";
-import { Replicate } from "replicate";
+import Replicate from "replicate"; // ✅ Corrected import
 
 export const config = {
   api: {
-    bodyParser: false, // Disable bodyParser to allow formidable to handle the request
+    bodyParser: false, // Required for formidable to work correctly
   },
 };
 
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       keepExtensions: true,
     });
 
-    // Convert the request into a readable stream manually
+    // Convert request into buffer
     const buffer = await req.arrayBuffer();
     const formData = await new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
       form.parse(Buffer.from(buffer), (err, fields, files) => {
