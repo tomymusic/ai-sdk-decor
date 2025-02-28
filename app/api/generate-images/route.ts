@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { IncomingMessage } from "http";
-import formidable from "formidable";
+import * as formidable from "formidable";
 import fs from "fs";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
