@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Readable } from "stream";
-import formidable from "formidable";
+import formidable, { Fields, Files } from "formidable";
 import fs from "fs/promises";
 
 // 🔄 Convierte `Buffer` en un Stream válido para formidable
@@ -28,8 +28,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       keepExtensions: true,
     });
 
-    // ✅ Parsea el formulario correctamente
-    const [fields, files] = await new Promise((resolve, reject) => {
+    // ✅ Parsea el formulario correctamente con tipo explícito
+    const [fields, files]: [Fields, Files] = await new Promise((resolve, reject) => {
       form.parse(stream, (err, fields, files) => {
         if (err) reject(err);
         else resolve([fields, files]);
