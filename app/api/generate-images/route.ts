@@ -10,10 +10,21 @@ export const config = {
   },
 };
 
-// ✅ Convierte `NextRequest.body` en un `Readable` Stream
+// ✅ Convierte `NextRequest.body` a un `Readable` Stream sin errores de tipo
 function toNodeStream(req: NextRequest): Readable {
   if (!req.body) throw new Error("Request body is empty");
-  return Readable.fromWeb(req.body as ReadableStream<Uint8Array>);
+
+  const reader = req.body.getReader();
+  return new Readable({
+    async read(size) {
+      const { done, value } = await reader.read();
+      if (done) {
+        this.push(null);
+      } else {
+        this.push(value);
+      }
+    },
+  });
 }
 
 // ✅ Función para parsear el formulario de manera correcta
