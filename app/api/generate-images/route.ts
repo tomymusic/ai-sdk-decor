@@ -23,7 +23,6 @@ export async function POST(req: NextRequest) {
       auth: process.env.REPLICATE_API_TOKEN!,
     });
 
-    // 🔧 Se corrige eliminando el tipado `string[]` y verificando si es un array
     const response = await replicate.run(
       "jagilley/controlnet-hough:854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
       {
@@ -36,8 +35,16 @@ export async function POST(req: NextRequest) {
 
     console.log("🔍 Respuesta de Replicate:", response);
 
-    // ✅ Verificamos que la respuesta es un array antes de acceder a `response[1]`
-    const finalImage = Array.isArray(response) && response.length > 1 ? response[1] : response[0];
+    // ✅ Verificamos si la respuesta es un array antes de acceder a índices
+    let finalImage: string | null = null;
+
+    if (Array.isArray(response) && response.length > 1) {
+      finalImage = response[1]; // Tomamos el segundo output
+    } else if (Array.isArray(response) && response.length === 1) {
+      finalImage = response[0]; // Si solo hay un output, usamos el primero
+    } else if (typeof response === "string") {
+      finalImage = response; // Si la respuesta es un string, lo usamos directamente
+    }
 
     if (!finalImage) {
       console.error("❌ Replicate no devolvió una imagen válida");
