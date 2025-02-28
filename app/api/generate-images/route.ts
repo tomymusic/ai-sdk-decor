@@ -6,28 +6,34 @@ import { Readable } from "stream";
 
 export const config = {
   api: {
-    bodyParser: false, // Necesario para que formidable maneje archivos
+    bodyParser: false, // Desactiva el bodyParser de Next.js para manejar archivos correctamente
   },
 };
+
+async function parseForm(req: NextRequest): Promise<{ fields: formidable.Fields; files: formidable.Files }> {
+  const form = formidable({ multiples: false, keepExtensions: true });
+
+  // ✅ Convertimos NextRequest en un stream de Node.js
+  const buffers = [];
+  for await (const chunk of req.body as any) {
+    buffers.push(chunk);
+  }
+  const buffer = Buffer.concat(buffers);
+  const stream = Readable.from(buffer);
+
+  return new Promise((resolve, reject) => {
+    form.parse(stream, (err, fields, files) => {
+      if (err) reject(err);
+      else resolve({ fields, files });
+    });
+  });
+}
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     console.log("📌 API recibió una solicitud");
 
-    const form = formidable({
-      multiples: false,
-      keepExtensions: true,
-    });
-
-    // ✅ Convertimos `NextRequest` en un `Readable` sin usar `any`
-    const stream = Readable.from(req.body as NodeJS.ReadableStream);
-    const { fields, files } = await new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
-      form.parse(stream, (err, fields, files) => {
-        if (err) reject(err);
-        else resolve({ fields, files });
-      });
-    });
-
+    const { fields, files } = await parseForm(req);
     console.log("✅ Datos recibidos:", fields, files);
 
     const prompt = fields.prompt?.[0] || "";
