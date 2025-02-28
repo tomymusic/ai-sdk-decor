@@ -9,7 +9,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const form = new formidable.IncomingForm();
 
     return new Promise((resolve) => {
-      form.parse(req as any, async (err, fields, files) => {
+      form.parse(req as unknown as IncomingMessage, async (err, fields, files) => {
         if (err) {
           console.error("❌ Error al analizar el formulario:", err);
           resolve(new NextResponse(JSON.stringify({ error: "Error parsing form data" }), { status: 500 }));
