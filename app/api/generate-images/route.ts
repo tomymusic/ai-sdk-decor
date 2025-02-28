@@ -1,36 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import formidable, { Fields, Files } from "formidable";
 import fs from "fs/promises";
-import { Readable } from "stream";
 
-// 🔄 Convierte `Buffer` en `Readable` para formidable
-function bufferToReadable(buffer: Buffer): Readable {
-  return Readable.from(buffer);
+// 🔄 Parsea el formulario con formidable (Sin IncomingMessage)
+async function parseFormData(req: NextRequest): Promise<{ fields: Fields; files: Files }> {
+  return new Promise(async (resolve, reject) => {
+    const form = formidable({ multiples: false, keepExtensions: true });
+
+    // 📌 Convertimos `NextRequest` a `Blob` y lo pasamos como stream a formidable
+    const blob = await req.blob();
+    const buffer = Buffer.from(await blob.arrayBuffer());
+
+    form.parse(buffer, (err, fields, files) => {
+      if (err) reject(err);
+      else resolve({ fields, files });
+    });
+  });
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     console.log("📌 API recibió una solicitud");
 
-    // ✅ Convierte `ArrayBuffer` en `Buffer`
-    const buffer = Buffer.from(await req.arrayBuffer());
-
-    // ✅ Convierte `Buffer` en `Readable` Stream
-    const stream = bufferToReadable(buffer);
-
-    const form = formidable({
-      multiples: false,
-      keepExtensions: true,
-    });
-
-    // ✅ Parsea el formulario correctamente sin `IncomingMessage`
-    const { fields, files }: { fields: Fields; files: Files } = await new Promise((resolve, reject) => {
-      form.parse(stream, (err, fields, files) => {
-        if (err) reject(err);
-        else resolve({ fields, files });
-      });
-    });
-
+    // ✅ Parsea el formulario correctamente
+    const { fields, files } = await parseFormData(req);
     console.log("✅ Datos recibidos:", fields, files);
 
     const prompt = fields.prompt?.[0] || "";
