@@ -1,41 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import formidable, { Fields, Files } from "formidable";
 import fs from "fs/promises";
-
-// 🔄 Parsea el formulario con formidable (Sin IncomingMessage)
-async function parseFormData(req: NextRequest): Promise<{ fields: Fields; files: Files }> {
-  return new Promise(async (resolve, reject) => {
-    const form = formidable({ multiples: false, keepExtensions: true });
-
-    // 📌 Convertimos `NextRequest` a `Blob` y lo pasamos como stream a formidable
-    const blob = await req.blob();
-    const buffer = Buffer.from(await blob.arrayBuffer());
-
-    form.parse(buffer, (err, fields, files) => {
-      if (err) reject(err);
-      else resolve({ fields, files });
-    });
-  });
-}
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     console.log("📌 API recibió una solicitud");
 
-    // ✅ Parsea el formulario correctamente
-    const { fields, files } = await parseFormData(req);
-    console.log("✅ Datos recibidos:", fields, files);
-
-    const prompt = fields.prompt?.[0] || "";
-    const imageFile = files.image?.[0];
+    // ✅ Parsea FormData sin formidable
+    const formData = await req.formData();
+    const prompt = formData.get("prompt") as string;
+    const imageFile = formData.get("image") as File;
 
     if (!imageFile || !prompt) {
       console.error("❌ Faltan datos: Image o Prompt");
       return new NextResponse(JSON.stringify({ error: "Image and prompt are required" }), { status: 400 });
     }
 
-    // 📷 Convierte la imagen a Base64
-    const imageBuffer = await fs.readFile(imageFile.filepath);
+    // 📷 Convertir imagen a Base64
+    const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
     const imageBase64 = imageBuffer.toString("base64");
 
     try {
