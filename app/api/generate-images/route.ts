@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { IncomingMessage } from "http";
-import * as formidable from "formidable";
+import formidable from "formidable";
 import fs from "fs";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     console.log("📌 API recibió una solicitud");
 
-    const form = new formidable.IncomingForm();
+    const form = formidable();
 
     return new Promise((resolve) => {
       form.parse(req as unknown as IncomingMessage, async (err, fields, files) => {
