@@ -2,37 +2,41 @@ import { NextRequest, NextResponse } from "next/server";
 import formidable, { Fields, Files } from "formidable";
 import { readFile } from "fs/promises";
 import Replicate from "replicate";
+import { IncomingMessage } from "http";
 import { Readable } from "stream";
 
 export const config = {
   api: {
-    bodyParser: false, // Desactivar bodyParser para manejar archivos correctamente
+    bodyParser: false, // ❌ Desactivamos el bodyParser para manejar archivos correctamente
   },
 };
 
-// ✅ Convierte `NextRequest.body` a un `Readable` Stream sin errores de tipo
-function toNodeStream(req: NextRequest): Readable {
+// ✅ Función para convertir `NextRequest` en `IncomingMessage`
+async function toIncomingMessage(req: NextRequest): Promise<IncomingMessage> {
   if (!req.body) throw new Error("Request body is empty");
 
   const reader = req.body.getReader();
-  return new Readable({
-    async read() { // 🔥 Eliminamos `size` para evitar ESLint error
+  const stream = new Readable({
+    async read() {
       const { done, value } = await reader.read();
-      if (done) {
-        this.push(null);
-      } else {
-        this.push(value);
-      }
+      if (done) this.push(null);
+      else this.push(value);
     },
   });
+
+  // 🔥 Crear un `IncomingMessage` falso para que formidable lo acepte
+  const incoming = new IncomingMessage(null as any);
+  stream.pipe(incoming);
+
+  return incoming;
 }
 
-// ✅ Función para parsear el formulario de manera correcta
+// ✅ Función para parsear el formulario correctamente
 async function parseForm(req: NextRequest): Promise<{ fields: Fields; files: Files }> {
   const form = formidable({ multiples: false, keepExtensions: true });
 
-  return new Promise<{ fields: Fields; files: Files }>((resolve, reject) => {
-    const stream = toNodeStream(req);
+  return new Promise(async (resolve, reject) => {
+    const stream = await toIncomingMessage(req);
     form.parse(stream, (err, fields, files) => {
       if (err) reject(err);
       else resolve({ fields, files });
@@ -40,12 +44,11 @@ async function parseForm(req: NextRequest): Promise<{ fields: Fields; files: Fil
   });
 }
 
-// ✅ API Handler - Genera imágenes con Replicate
+// ✅ API Handler
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     console.log("📌 API recibió una solicitud");
 
-    // ⬇ Parseamos la imagen y el prompt desde el formulario
     const { fields, files } = await parseForm(req);
     console.log("✅ Datos recibidos:", fields, files);
 
@@ -57,7 +60,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: "Image and prompt are required" }, { status: 400 });
     }
 
-    // ⬇ Convertimos la imagen a Base64
+    // Leer el archivo y convertirlo en base64
     const imageBuffer = await readFile(imageFile.filepath);
     const imageBase64 = imageBuffer.toString("base64");
 
@@ -67,7 +70,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         auth: process.env.REPLICATE_API_TOKEN!,
       });
 
-      // ⬇ Enviamos la imagen y prompt a Replicate
       const response = await replicate.run<string[]>(
         "jagilley/controlnet-hough:854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
         {
