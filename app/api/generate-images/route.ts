@@ -1,24 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Readable } from "stream";
 import formidable from "formidable";
 import fs from "fs/promises";
+
+async function streamToBuffer(stream: Readable): Promise<Buffer> {
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks);
+}
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     console.log("📌 API recibió una solicitud");
 
-    // ⚡ Convierte el request en un stream legible
-    const body = await req.body;
-    if (!body) {
-      return new NextResponse(JSON.stringify({ error: "No request body" }), { status: 400 });
-    }
-    
+    // 📌 Convierte `NextRequest` en un `Readable` stream
+    const stream = Readable.from(await req.arrayBuffer());
+
     const form = formidable({
       multiples: false,
       keepExtensions: true,
     });
 
-    // ✅ Parsea los datos de la solicitud como Buffer
-    const buffer = Buffer.from(await req.arrayBuffer());
+    // ✅ Convierte el stream en un buffer antes de pasarlo a formidable
+    const buffer = await streamToBuffer(stream);
+
     const [fields, files] = await new Promise((resolve, reject) => {
       form.parse(buffer, (err, fields, files) => {
         if (err) reject(err);
