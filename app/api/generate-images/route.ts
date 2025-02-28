@@ -2,36 +2,26 @@ import { NextRequest, NextResponse } from "next/server";
 import formidable, { Fields, Files } from "formidable";
 import { readFile } from "fs/promises";
 import Replicate from "replicate";
-import { IncomingMessage } from "http";
 import { Readable } from "stream";
 
 export const config = {
   api: {
-    bodyParser: false, // ❌ Desactivamos el bodyParser para manejar archivos correctamente
+    bodyParser: false, // Necesario para manejar archivos correctamente
   },
 };
 
-// ✅ Función para convertir `NextRequest` a `IncomingMessage`
-async function toIncomingMessage(req: NextRequest): Promise<IncomingMessage> {
-  const body = req.body;
-  if (!body) throw new Error("Request body is empty");
-
-  const readable = Readable.fromWeb(body as ReadableStream);
-  const incoming = new IncomingMessage(null as any);
-  
-  // 🔄 Pasamos datos del `readable` al `IncomingMessage`
-  readable.on("data", (chunk) => incoming.push(chunk));
-  readable.on("end", () => incoming.push(null));
-
-  return incoming;
+// ✅ Convierte `NextRequest.body` en un `Readable` stream
+function toNodeReadable(req: NextRequest): Readable {
+  if (!req.body) throw new Error("Request body is empty");
+  return Readable.from(req.body as any);
 }
 
-// ✅ Función para parsear el formulario correctamente
+// ✅ Función para parsear el formulario
 async function parseForm(req: NextRequest): Promise<{ fields: Fields; files: Files }> {
   const form = formidable({ multiples: false, keepExtensions: true });
 
-  return new Promise(async (resolve, reject) => {
-    const stream = await toIncomingMessage(req);
+  return new Promise((resolve, reject) => {
+    const stream = toNodeReadable(req); // Convertimos `req.body` en `Readable`
     form.parse(stream, (err, fields, files) => {
       if (err) reject(err);
       else resolve({ fields, files });
@@ -44,6 +34,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     console.log("📌 API recibió una solicitud");
 
+    // ⬇ Parseamos la imagen y el prompt desde el formulario
     const { fields, files } = await parseForm(req);
     console.log("✅ Datos recibidos:", fields, files);
 
@@ -52,10 +43,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     if (!imageFile || !prompt) {
       console.error("❌ Faltan datos: Image o Prompt");
-      return new NextResponse(JSON.stringify({ error: "Image and prompt are required" }), { status: 400 });
+      return NextResponse.json({ error: "Image and prompt are required" }, { status: 400 });
     }
 
-    // Leer el archivo y convertirlo en base64
+    // ⬇ Convertimos la imagen a Base64
     const imageBuffer = await readFile(imageFile.filepath);
     const imageBase64 = imageBuffer.toString("base64");
 
@@ -65,6 +56,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         auth: process.env.REPLICATE_API_TOKEN!,
       });
 
+      // ⬇ Enviamos la imagen y prompt a Replicate
       const response = await replicate.run(
         "jagilley/controlnet-hough:854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
         {
@@ -82,16 +74,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
       if (!finalImage) {
         console.error("❌ Replicate no devolvió una segunda imagen válida");
-        return new NextResponse(JSON.stringify({ error: "Failed to get output_1.png" }), { status: 500 });
+        return NextResponse.json({ error: "Failed to get output_1.png" }, { status: 500 });
       }
 
-      return new NextResponse(JSON.stringify({ image_url: finalImage }), { status: 200 });
+      return NextResponse.json({ image_url: finalImage }, { status: 200 });
     } catch (error) {
       console.error("❌ Error al comunicarse con Replicate:", error);
-      return new NextResponse(JSON.stringify({ error: "Failed to connect to Replicate" }), { status: 500 });
+      return NextResponse.json({ error: "Failed to connect to Replicate" }, { status: 500 });
     }
   } catch (error) {
     console.error("❌ Error en la API:", error);
-    return new NextResponse(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
