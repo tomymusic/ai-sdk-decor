@@ -3,31 +3,34 @@ import { Readable } from "stream";
 import formidable from "formidable";
 import fs from "fs/promises";
 
-async function streamToBuffer(stream: Readable): Promise<Buffer> {
-  const chunks: Buffer[] = [];
-  for await (const chunk of stream) {
-    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-  }
-  return Buffer.concat(chunks);
+// 🔄 Convierte `Buffer` en un Stream válido para formidable
+function bufferToStream(buffer: Buffer): Readable {
+  return new Readable({
+    read() {
+      this.push(buffer);
+      this.push(null);
+    }
+  });
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     console.log("📌 API recibió una solicitud");
 
-    // 📌 Convierte `NextRequest` en un `Readable` stream
-    const stream = Readable.from(await req.arrayBuffer());
+    // ✅ Convierte `ArrayBuffer` en `Buffer`
+    const buffer = Buffer.from(await req.arrayBuffer());
+
+    // ✅ Convierte el `Buffer` en un `Readable` stream
+    const stream = bufferToStream(buffer);
 
     const form = formidable({
       multiples: false,
       keepExtensions: true,
     });
 
-    // ✅ Convierte el stream en un buffer antes de pasarlo a formidable
-    const buffer = await streamToBuffer(stream);
-
+    // ✅ Parsea el formulario correctamente
     const [fields, files] = await new Promise((resolve, reject) => {
-      form.parse(buffer, (err, fields, files) => {
+      form.parse(stream, (err, fields, files) => {
         if (err) reject(err);
         else resolve([fields, files]);
       });
