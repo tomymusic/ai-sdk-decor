@@ -1,18 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import formidable from "formidable";
-import fs from "fs/promises"; // Usa fs/promises para manejar archivos asincrónicamente.
+import fs from "fs/promises";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     console.log("📌 API recibió una solicitud");
 
+    // ⚡ Convierte el request en un stream legible
+    const body = await req.body;
+    if (!body) {
+      return new NextResponse(JSON.stringify({ error: "No request body" }), { status: 400 });
+    }
+    
     const form = formidable({
-      multiples: false, // Solo se permite subir una imagen.
-      keepExtensions: true, // Mantiene la extensión original del archivo.
+      multiples: false,
+      keepExtensions: true,
     });
 
-    // ✅ Forma moderna de parsear el formulario en Next.js 15
-    const [fields, files] = await form.parse(req);
+    // ✅ Parsea los datos de la solicitud como Buffer
+    const buffer = Buffer.from(await req.arrayBuffer());
+    const [fields, files] = await new Promise((resolve, reject) => {
+      form.parse(buffer, (err, fields, files) => {
+        if (err) reject(err);
+        else resolve([fields, files]);
+      });
+    });
 
     console.log("✅ Datos recibidos:", fields, files);
 
@@ -24,7 +36,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return new NextResponse(JSON.stringify({ error: "Image and prompt are required" }), { status: 400 });
     }
 
-    // Leer el archivo como buffer y convertirlo a Base64
+    // 📷 Convierte la imagen a Base64
     const imageBuffer = await fs.readFile(imageFile.filepath);
     const imageBase64 = imageBuffer.toString("base64");
 
