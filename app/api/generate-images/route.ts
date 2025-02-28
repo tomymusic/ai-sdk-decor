@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import formidable from "formidable";
 import { readFile } from "fs/promises";
-import Replicate from "replicate"; // ✅ Corrected import
+import Replicate from "replicate";
+import { Readable } from "stream";
 
 export const config = {
   api: {
-    bodyParser: false, // Required for formidable to work correctly
+    bodyParser: false, // Required for formidable to handle file uploads
   },
 };
 
@@ -18,16 +19,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       keepExtensions: true,
     });
 
-    // Convert request into buffer
-    const buffer = await req.arrayBuffer();
-    const formData = await new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
-      form.parse(Buffer.from(buffer), (err, fields, files) => {
+    // ✅ Convert `NextRequest` into a readable stream
+    const stream = Readable.from(req.body as any); // Next.js request streaming
+    const { fields, files } = await new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
+      form.parse(stream, (err, fields, files) => {
         if (err) reject(err);
         else resolve({ fields, files });
       });
     });
 
-    const { fields, files } = formData;
     console.log("✅ Datos recibidos:", fields, files);
 
     const prompt = fields.prompt?.[0] || "";
