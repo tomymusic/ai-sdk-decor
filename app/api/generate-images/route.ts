@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Readable } from "stream";
 import formidable, { Fields, Files } from "formidable";
 import fs from "fs/promises";
+import { Readable } from "stream";
 
-// 🔄 Convierte `Buffer` en un Stream válido para formidable
-function bufferToStream(buffer: Buffer): Readable {
-  const stream = new Readable();
-  stream.push(buffer);
-  stream.push(null);
-  return stream;
+// 🔄 Convierte `Buffer` en `Readable` para formidable
+function bufferToReadable(buffer: Buffer): Readable {
+  return Readable.from(buffer);
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -19,18 +16,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const buffer = Buffer.from(await req.arrayBuffer());
 
     // ✅ Convierte `Buffer` en `Readable` Stream
-    const stream = bufferToStream(buffer);
+    const stream = bufferToReadable(buffer);
 
     const form = formidable({
       multiples: false,
       keepExtensions: true,
     });
 
-    // ✅ Parsea el formulario correctamente con `Readable`
-    const [fields, files]: [Fields, Files] = await new Promise((resolve, reject) => {
+    // ✅ Parsea el formulario correctamente sin `IncomingMessage`
+    const { fields, files }: { fields: Fields; files: Files } = await new Promise((resolve, reject) => {
       form.parse(stream, (err, fields, files) => {
         if (err) reject(err);
-        else resolve([fields, files]);
+        else resolve({ fields, files });
       });
     });
 
