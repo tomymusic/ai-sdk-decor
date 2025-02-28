@@ -11,7 +11,6 @@ export async function POST(req: NextRequest) {
   try {
     console.log("📌 API recibió una solicitud");
 
-    // ✅ Extraemos el JSON con la imagen en base64 y el prompt
     const { imageBase64, prompt } = await req.json();
 
     if (!imageBase64 || !prompt) {
@@ -24,8 +23,8 @@ export async function POST(req: NextRequest) {
       auth: process.env.REPLICATE_API_TOKEN!,
     });
 
-    // 🔧 Se corrige el error eliminando `<string[]>`
-    const response: string[] = await replicate.run(
+    // 🔧 Se corrige eliminando el tipado `string[]` y verificando si es un array
+    const response = await replicate.run(
       "jagilley/controlnet-hough:854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
       {
         input: {
@@ -37,8 +36,8 @@ export async function POST(req: NextRequest) {
 
     console.log("🔍 Respuesta de Replicate:", response);
 
-    // ✅ Extraemos `output_1.png`
-    const finalImage = response.length > 1 ? response[1] : response[0];
+    // ✅ Verificamos que la respuesta es un array antes de acceder a `response[1]`
+    const finalImage = Array.isArray(response) && response.length > 1 ? response[1] : response[0];
 
     if (!finalImage) {
       console.error("❌ Replicate no devolvió una imagen válida");
