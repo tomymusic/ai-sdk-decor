@@ -16,7 +16,7 @@ function toNodeStream(req: NextRequest): Readable {
 
   const reader = req.body.getReader();
   return new Readable({
-    async read(size) {
+    async read() { // 🔥 Eliminamos `size` para evitar ESLint error
       const { done, value } = await reader.read();
       if (done) {
         this.push(null);
