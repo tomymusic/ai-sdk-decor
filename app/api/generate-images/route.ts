@@ -2,42 +2,40 @@ import { NextRequest, NextResponse } from "next/server";
 import formidable, { Fields, Files } from "formidable";
 import { readFile } from "fs/promises";
 import Replicate from "replicate";
+import { IncomingMessage } from "http";
 import { Readable } from "stream";
 
 export const config = {
   api: {
-    bodyParser: false, // Desactiva el bodyParser para manejar archivos correctamente
+    bodyParser: false, // ❌ Desactivamos el bodyParser para manejar archivos correctamente
   },
 };
 
-// ✅ Función para convertir `NextRequest` en `Readable` sin `any`
-async function toNodeStream(req: NextRequest): Promise<Readable> {
-  const buffers: Buffer[] = [];
-  const reader = req.body?.getReader();
-  if (!reader) throw new Error("Request body is empty");
+// ✅ Función para convertir `NextRequest` a `IncomingMessage`
+async function toIncomingMessage(req: NextRequest): Promise<IncomingMessage> {
+  const body = req.body;
+  if (!body) throw new Error("Request body is empty");
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffers.push(Buffer.from(value));
-  }
+  const readable = Readable.fromWeb(body as ReadableStream);
+  const incoming = new IncomingMessage(null as any);
+  
+  // 🔄 Pasamos datos del `readable` al `IncomingMessage`
+  readable.on("data", (chunk) => incoming.push(chunk));
+  readable.on("end", () => incoming.push(null));
 
-  return Readable.from(Buffer.concat(buffers));
+  return incoming;
 }
 
-// ✅ Función para parsear el formulario sin `any`
+// ✅ Función para parsear el formulario correctamente
 async function parseForm(req: NextRequest): Promise<{ fields: Fields; files: Files }> {
   const form = formidable({ multiples: false, keepExtensions: true });
 
-  return new Promise((resolve, reject) => {
-    toNodeStream(req)
-      .then((stream) => {
-        form.parse(stream, (err, fields, files) => {
-          if (err) reject(err);
-          else resolve({ fields, files });
-        });
-      })
-      .catch(reject);
+  return new Promise(async (resolve, reject) => {
+    const stream = await toIncomingMessage(req);
+    form.parse(stream, (err, fields, files) => {
+      if (err) reject(err);
+      else resolve({ fields, files });
+    });
   });
 }
 
