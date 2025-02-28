@@ -4,18 +4,31 @@ import { useState } from "react";
 import Image from "next/image";
 
 interface ImageUploaderProps {
-  onImageUpload: (file: File | null) => void;
+  onImageUpload: (base64Image: string | null) => void; // Ahora espera Base64 en lugar de File
 }
 
 export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
   const [preview, setPreview] = useState<string | null>(null);
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      onImageUpload(file);
-      setPreview(URL.createObjectURL(file));
-    }
+    if (!file) return;
+
+    // Convertir a Base64
+    const base64 = await convertFileToBase64(file);
+
+    onImageUpload(base64);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  // Función para convertir un archivo a Base64
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
   };
 
   return (
