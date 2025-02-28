@@ -3,7 +3,7 @@ import Replicate from "replicate";
 
 export const config = {
   api: {
-    bodyParser: false, // ❌ Desactivamos el bodyParser
+    bodyParser: false,
   },
 };
 
@@ -24,7 +24,8 @@ export async function POST(req: NextRequest) {
       auth: process.env.REPLICATE_API_TOKEN!,
     });
 
-    const response = await replicate.run<string[]>(
+    // 🔧 Se corrige el error eliminando `<string[]>`
+    const response: string[] = await replicate.run(
       "jagilley/controlnet-hough:854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
       {
         input: {
