@@ -19,8 +19,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       keepExtensions: true,
     });
 
-    // ✅ Convert `NextRequest` into a readable stream
-    const stream = Readable.from(req.body as any); // Next.js request streaming
+    // ✅ Convert `NextRequest` into a readable stream without `any`
+    const stream = Readable.from(req.body as NodeJS.ReadableStream); // Correct TypeScript type
     const { fields, files } = await new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
       form.parse(stream, (err, fields, files) => {
         if (err) reject(err);
