@@ -6,7 +6,7 @@ import { Readable } from "stream";
 
 export const config = {
   api: {
-    bodyParser: false, // Required for formidable to handle file uploads
+    bodyParser: false, // Necesario para que formidable maneje archivos
   },
 };
 
@@ -19,8 +19,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       keepExtensions: true,
     });
 
-    // ✅ Convert `NextRequest` into a readable stream without `any`
-    const stream = Readable.from(req.body as NodeJS.ReadableStream); // Correct TypeScript type
+    // ✅ Convertimos `NextRequest` en un `Readable` sin usar `any`
+    const stream = Readable.from(req.body as NodeJS.ReadableStream);
     const { fields, files } = await new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
       form.parse(stream, (err, fields, files) => {
         if (err) reject(err);
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return new NextResponse(JSON.stringify({ error: "Image and prompt are required" }), { status: 400 });
     }
 
-    // Read file as base64
+    // Leer el archivo y convertirlo en base64
     const imageBuffer = await readFile(imageFile.filepath);
     const imageBase64 = imageBuffer.toString("base64");
 
@@ -60,12 +60,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
       console.log("🔍 Respuesta de Replicate:", response);
 
-      if (!response || !response.length) {
-        console.error("❌ Replicate no devolvió una imagen válida");
-        return new NextResponse(JSON.stringify({ error: "Failed to generate image" }), { status: 500 });
+      // ✅ Solo extraemos `output_1.png`
+      const finalImage = Array.isArray(response) && response.length > 1 ? response[1] : null;
+
+      if (!finalImage) {
+        console.error("❌ Replicate no devolvió una segunda imagen válida");
+        return new NextResponse(JSON.stringify({ error: "Failed to get output_1.png" }), { status: 500 });
       }
 
-      return new NextResponse(JSON.stringify({ image_url: response }), { status: 200 });
+      return new NextResponse(JSON.stringify({ image_url: finalImage }), { status: 200 });
     } catch (error) {
       console.error("❌ Error al comunicarse con Replicate:", error);
       return new NextResponse(JSON.stringify({ error: "Failed to connect to Replicate" }), { status: 500 });
