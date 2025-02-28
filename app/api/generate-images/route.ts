@@ -5,12 +5,10 @@ import fs from "fs/promises";
 
 // 🔄 Convierte `Buffer` en un Stream válido para formidable
 function bufferToStream(buffer: Buffer): Readable {
-  return new Readable({
-    read() {
-      this.push(buffer);
-      this.push(null);
-    }
-  });
+  const stream = new Readable();
+  stream.push(buffer);
+  stream.push(null);
+  return stream;
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -20,7 +18,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     // ✅ Convierte `ArrayBuffer` en `Buffer`
     const buffer = Buffer.from(await req.arrayBuffer());
 
-    // ✅ Convierte el `Buffer` en un `Readable` stream
+    // ✅ Convierte `Buffer` en `Readable` Stream
     const stream = bufferToStream(buffer);
 
     const form = formidable({
@@ -28,7 +26,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       keepExtensions: true,
     });
 
-    // ✅ Parsea el formulario correctamente con tipo explícito
+    // ✅ Parsea el formulario correctamente con `Readable`
     const [fields, files]: [Fields, Files] = await new Promise((resolve, reject) => {
       form.parse(stream, (err, fields, files) => {
         if (err) reject(err);
