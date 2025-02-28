@@ -1,34 +1,47 @@
 import { NextRequest, NextResponse } from "next/server";
-import formidable from "formidable";
+import formidable, { Fields, Files } from "formidable";
 import { readFile } from "fs/promises";
 import Replicate from "replicate";
 import { Readable } from "stream";
 
 export const config = {
   api: {
-    bodyParser: false, // Desactiva el bodyParser de Next.js para manejar archivos correctamente
+    bodyParser: false, // Desactiva el bodyParser para manejar archivos correctamente
   },
 };
 
-async function parseForm(req: NextRequest): Promise<{ fields: formidable.Fields; files: formidable.Files }> {
+// ✅ Función para convertir `NextRequest` en `Readable` sin `any`
+async function toNodeStream(req: NextRequest): Promise<Readable> {
+  const buffers: Buffer[] = [];
+  const reader = req.body?.getReader();
+  if (!reader) throw new Error("Request body is empty");
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffers.push(Buffer.from(value));
+  }
+
+  return Readable.from(Buffer.concat(buffers));
+}
+
+// ✅ Función para parsear el formulario sin `any`
+async function parseForm(req: NextRequest): Promise<{ fields: Fields; files: Files }> {
   const form = formidable({ multiples: false, keepExtensions: true });
 
-  // ✅ Convertimos NextRequest en un stream de Node.js
-  const buffers = [];
-  for await (const chunk of req.body as any) {
-    buffers.push(chunk);
-  }
-  const buffer = Buffer.concat(buffers);
-  const stream = Readable.from(buffer);
-
   return new Promise((resolve, reject) => {
-    form.parse(stream, (err, fields, files) => {
-      if (err) reject(err);
-      else resolve({ fields, files });
-    });
+    toNodeStream(req)
+      .then((stream) => {
+        form.parse(stream, (err, fields, files) => {
+          if (err) reject(err);
+          else resolve({ fields, files });
+        });
+      })
+      .catch(reject);
   });
 }
 
+// ✅ API Handler
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     console.log("📌 API recibió una solicitud");
@@ -66,7 +79,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
       console.log("🔍 Respuesta de Replicate:", response);
 
-      // ✅ Solo extraemos `output_1.png`
+      // ✅ Extraemos `output_1.png`
       const finalImage = Array.isArray(response) && response.length > 1 ? response[1] : null;
 
       if (!finalImage) {
