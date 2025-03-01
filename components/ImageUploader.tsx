@@ -14,10 +14,11 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Convertir a Base64
+    // Convertir a Base64 y eliminar el prefijo "data:image/png;base64,"
     const base64 = await convertFileToBase64(file);
+    const base64WithoutPrefix = base64.split(",")[1]; // Eliminamos la parte "data:image/png;base64,"
 
-    onImageUpload(base64);
+    onImageUpload(base64WithoutPrefix);
     setPreview(URL.createObjectURL(file));
   };
 
