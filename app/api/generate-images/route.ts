@@ -37,21 +37,19 @@ export async function POST(req: NextRequest) {
 
     console.log("🔍 Respuesta de Replicate:", response);
 
-    // ✅ **Asegurar que la respuesta sea una URL válida**
+    // ✅ Extraemos la imagen desde el campo "output"
     let finalImage: string | null = null;
 
-    if (Array.isArray(response) && response.length > 0) {
-      finalImage = response.find((url) => typeof url === "string") || null;
-    } else if (typeof response === "string") {
-      finalImage = response;
+    if (response?.output && Array.isArray(response.output) && response.output.length > 0) {
+      finalImage = response.output[response.output.length - 1]; // Tomamos la última imagen generada
     }
 
     if (!finalImage) {
-      console.error("❌ Replicate no devolvió una imagen válida");
+      console.error("❌ Replicate no devolvió una imagen válida", response);
       return NextResponse.json({ error: "Failed to get image" }, { status: 500 });
     }
 
-    console.log("✅ Imagen final enviada:", finalImage);
+    console.log("✅ Imagen generada:", finalImage);
     return NextResponse.json({ image_url: finalImage }, { status: 200 });
   } catch (error) {
     console.error("❌ Error en la API:", error);
