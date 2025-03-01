@@ -4,7 +4,7 @@ import { useState } from "react";
 import { PromptInput } from "@/components/PromptInput";
 import { Header } from "@/components/Header";
 import { ImageUploader } from "@/components/ImageUploader";
-import Image from "next/image";
+import Image from "next/image"; // ✅ Se usa correctamente
 import { Suggestion } from "@/lib/suggestions";
 
 interface ImagePlaygroundProps {
@@ -96,12 +96,15 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
         {generatedImage && (
           <div className="mt-6">
             <h2 className="text-center text-lg font-semibold">Generated Image</h2>
-            <div className="mt-4 w-full rounded-lg overflow-hidden">
-              {/* 🔥 Se usa un `div` con `img` en lugar de Next.js `Image` */}
-              <img
+            <div className="mt-4 w-full rounded-lg overflow-hidden flex justify-center">
+              {/* ✅ Se usa `next/image` correctamente */}
+              <Image
                 src={generatedImage}
                 alt="Generated"
-                className="rounded-lg mx-auto max-w-full h-auto"
+                width={600}
+                height={400}
+                className="rounded-lg"
+                unoptimized={true} // ✅ Evita problemas con imágenes externas o Blob URLs
               />
             </div>
           </div>
