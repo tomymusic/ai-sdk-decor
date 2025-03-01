@@ -12,13 +12,15 @@ interface ImagePlaygroundProps {
 }
 
 export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
-  const [imageBase64, setImageBase64] = useState<string | null>(null); // 📌 Renombrado para mayor claridad
+  const [image, setImage] = useState<string | null>(null); // Imagen en Base64
   const [isLoading, setIsLoading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [showProviders, setShowProviders] = useState(true);
   const [mode, setMode] = useState<"performance" | "quality">("performance");
 
-  const toggleView = () => setShowProviders((prev) => !prev);
+  const toggleView = () => {
+    setShowProviders((prev) => !prev);
+  };
 
   const handleModeChange = (newMode: "performance" | "quality") => {
     setMode(newMode);
@@ -26,34 +28,52 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
   };
 
   const handleSubmit = async (prompt: string) => {
-    if (!imageBase64) {
+    if (!image) {
       alert("Please upload an image.");
       return;
     }
     setIsLoading(true);
 
     const payload = {
-      imageBase64, // 📌 Se envía directamente sin prefijo (se agrega en `route.ts`)
+      imageBase64: image,
       prompt,
     };
 
     try {
       const response = await fetch("/api/generate-images", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
-
+      const contentType = response.headers.get("content-type");
       if (!response.ok) {
-        throw new Error(data.error || "Failed to generate image");
+        throw new Error(`Error en la API: ${response.statusText}`);
       }
 
-      setGeneratedImage(data.image_url);
+      if (contentType?.includes("application/json")) {
+        // ✅ Caso 1: Si la API devuelve una URL válida
+        const data = await response.json();
+        console.log("✅ Imagen recibida:", data.image_url);
+
+        if (typeof data.image_url === "string") {
+          setGeneratedImage(data.image_url);
+        } else {
+          throw new Error("Formato de imagen inválido");
+        }
+      } else if (contentType?.includes("application/octet-stream")) {
+        // ✅ Caso 2: Si la API devuelve un Stream de imagen (Blob)
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        console.log("✅ Imagen convertida a Blob URL:", blobUrl);
+        setGeneratedImage(blobUrl);
+      } else {
+        throw new Error("Formato de respuesta desconocido");
+      }
     } catch (error) {
-      console.error("❌ Error generating image:", error);
-      alert("Error generating image. Check the console for details.");
+      console.error("Error generando imagen:", error);
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +83,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <Header />
-        <ImageUploader onImageUpload={setImageBase64} /> {/* ✅ Enviamos Base64 directo */}
+        <ImageUploader onImageUpload={setImage} />
         <PromptInput
           onSubmit={handleSubmit}
           isLoading={isLoading}
@@ -77,7 +97,12 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           <div className="mt-6">
             <h2 className="text-center text-lg font-semibold">Generated Image</h2>
             <div className="mt-4 w-full rounded-lg overflow-hidden">
-              <Image src={generatedImage} alt="Generated" width={600} height={400} className="rounded-lg" />
+              {/* 🔥 Se usa un `div` con `img` en lugar de Next.js `Image` */}
+              <img
+                src={generatedImage}
+                alt="Generated"
+                className="rounded-lg mx-auto max-w-full h-auto"
+              />
             </div>
           </div>
         )}
