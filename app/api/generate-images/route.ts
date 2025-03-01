@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
 
     const { imageBase64, prompt } = await req.json();
 
-    // ✅ Nuevo log para confirmar los datos recibidos
     console.log("✅ Recibido en la API:", { imageBase64Length: imageBase64?.length, prompt });
 
     if (!imageBase64 || !prompt) {
@@ -26,7 +25,7 @@ export async function POST(req: NextRequest) {
       auth: process.env.REPLICATE_API_TOKEN!,
     });
 
-    let response = await replicate.run(
+    const response = await replicate.run(
       "jagilley/controlnet-hough:854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
       {
         input: {
@@ -36,35 +35,15 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    console.log("🔍 Respuesta de Replicate antes de procesar:", response);
+    console.log("🔍 Respuesta de Replicate:", response);
 
-    // ✅ Verificamos si la respuesta es un `ReadableStream` y la decodificamos
-    if (response instanceof ReadableStream) {
-      const reader = response.getReader();
-      const decoder = new TextDecoder();
-      let responseText = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        responseText += decoder.decode(value, { stream: true });
-      }
-
-      console.log("📜 Respuesta de Replicate decodificada:", responseText);
-      response = JSON.parse(responseText);
-    }
-
-    console.log("🔍 Respuesta final de Replicate:", response);
-
-    // ✅ Ahora verificamos si la respuesta contiene las imágenes esperadas
+    // ✅ **Asegurar que la respuesta sea una URL válida**
     let finalImage: string | null = null;
 
-    if (Array.isArray(response) && response.length > 1) {
-      finalImage = response[1]; // Tomamos el segundo output
-    } else if (Array.isArray(response) && response.length === 1) {
-      finalImage = response[0]; // Si solo hay un output, usamos el primero
+    if (Array.isArray(response) && response.length > 0) {
+      finalImage = response.find((url) => typeof url === "string") || null;
     } else if (typeof response === "string") {
-      finalImage = response; // Si la respuesta es un string, lo usamos directamente
+      finalImage = response;
     }
 
     if (!finalImage) {
@@ -72,6 +51,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to get image" }, { status: 500 });
     }
 
+    console.log("✅ Imagen final enviada:", finalImage);
     return NextResponse.json({ image_url: finalImage }, { status: 200 });
   } catch (error) {
     console.error("❌ Error en la API:", error);
