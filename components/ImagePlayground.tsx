@@ -12,7 +12,7 @@ interface ImagePlaygroundProps {
 }
 
 export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
-  const [image, setImage] = useState<File | null>(null);
+  const [image, setImage] = useState<string | null>(null); // Almacena la imagen en Base64
   const [isLoading, setIsLoading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [showProviders, setShowProviders] = useState(true);
@@ -34,15 +34,20 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     }
     setIsLoading(true);
 
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("prompt", prompt);
+    const payload = {
+      image: `data:image/png;base64,${image}`, // 🔥 Se envía en el formato correcto
+      prompt,
+    };
 
     try {
       const response = await fetch("/api/generate-images", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
+
       const data = await response.json();
       setGeneratedImage(data.image_url);
     } catch (error) {
@@ -56,7 +61,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <Header />
-        <ImageUploader onImageUpload={setImage} />
+        <ImageUploader onImageUpload={setImage} /> {/* ✅ Se pasa Base64 en lugar de File */}
         <PromptInput
           onSubmit={handleSubmit}
           isLoading={isLoading}
