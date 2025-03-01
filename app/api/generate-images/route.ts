@@ -13,8 +13,11 @@ export async function POST(req: NextRequest) {
 
     const { imageBase64, prompt } = await req.json();
 
+    // ✅ Nuevo log para confirmar los datos recibidos
+    console.log("✅ Recibido en la API:", { imageBase64Length: imageBase64?.length, prompt });
+
     if (!imageBase64 || !prompt) {
-      console.error("❌ Faltan datos: Image o Prompt");
+      console.error("❌ Faltan datos: Image o Prompt", { imageBase64Length: imageBase64?.length, prompt });
       return NextResponse.json({ error: "Image and prompt are required" }, { status: 400 });
     }
 
