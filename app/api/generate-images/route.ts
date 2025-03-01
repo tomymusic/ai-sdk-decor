@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
 
     const { imageBase64, prompt } = await req.json();
 
-    // ✅ Nuevo log para confirmar los datos recibidos
     console.log("✅ Recibido en la API:", { imageBase64Length: imageBase64?.length, prompt });
 
     if (!imageBase64 || !prompt) {
@@ -38,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     console.log("🔍 Respuesta de Replicate antes de procesar:", response);
 
-    // ✅ Verificamos si la respuesta es un `ReadableStream` y la decodificamos
+    // 🔥 **Convertir `ReadableStream` a JSON si es necesario**
     if (response instanceof ReadableStream) {
       const reader = response.getReader();
       const decoder = new TextDecoder();
@@ -56,15 +55,15 @@ export async function POST(req: NextRequest) {
 
     console.log("🔍 Respuesta final de Replicate:", response);
 
-    // ✅ Ahora verificamos si la respuesta contiene las imágenes esperadas
+    // ✅ **Extraer correctamente la imagen generada**
     let finalImage: string | null = null;
 
     if (Array.isArray(response) && response.length > 1) {
-      finalImage = response[1]; // Tomamos el segundo output
+      finalImage = response[1]; // Tomamos la segunda imagen si existe
     } else if (Array.isArray(response) && response.length === 1) {
-      finalImage = response[0]; // Si solo hay un output, usamos el primero
+      finalImage = response[0]; // Si hay solo una imagen, usamos la primera
     } else if (typeof response === "string") {
-      finalImage = response; // Si la respuesta es un string, lo usamos directamente
+      finalImage = response; // Si la API responde con una URL directa
     }
 
     if (!finalImage) {
