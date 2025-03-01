@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       auth: process.env.REPLICATE_API_TOKEN!,
     });
 
-    const response = await replicate.run(
+    let response = await replicate.run(
       "jagilley/controlnet-hough:854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
       {
         input: {
@@ -36,9 +36,27 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    console.log("🔍 Respuesta de Replicate:", response);
+    console.log("🔍 Respuesta de Replicate antes de procesar:", response);
 
-    // ✅ Verificamos si la respuesta es un array antes de acceder a índices
+    // ✅ Verificamos si la respuesta es un `ReadableStream` y la decodificamos
+    if (response instanceof ReadableStream) {
+      const reader = response.getReader();
+      const decoder = new TextDecoder();
+      let responseText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        responseText += decoder.decode(value, { stream: true });
+      }
+
+      console.log("📜 Respuesta de Replicate decodificada:", responseText);
+      response = JSON.parse(responseText);
+    }
+
+    console.log("🔍 Respuesta final de Replicate:", response);
+
+    // ✅ Ahora verificamos si la respuesta contiene las imágenes esperadas
     let finalImage: string | null = null;
 
     if (Array.isArray(response) && response.length > 1) {
