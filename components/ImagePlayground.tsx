@@ -12,15 +12,13 @@ interface ImagePlaygroundProps {
 }
 
 export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
-  const [image, setImage] = useState<string | null>(null); // Almacena la imagen en Base64
+  const [imageBase64, setImageBase64] = useState<string | null>(null); // 📌 Renombrado para mayor claridad
   const [isLoading, setIsLoading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [showProviders, setShowProviders] = useState(true);
   const [mode, setMode] = useState<"performance" | "quality">("performance");
 
-  const toggleView = () => {
-    setShowProviders((prev) => !prev);
-  };
+  const toggleView = () => setShowProviders((prev) => !prev);
 
   const handleModeChange = (newMode: "performance" | "quality") => {
     setMode(newMode);
@@ -28,30 +26,34 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
   };
 
   const handleSubmit = async (prompt: string) => {
-    if (!image) {
+    if (!imageBase64) {
       alert("Please upload an image.");
       return;
     }
     setIsLoading(true);
 
     const payload = {
-      image: `data:image/png;base64,${image}`, // 🔥 Se envía en el formato correcto
+      imageBase64, // 📌 Se envía directamente sin prefijo (se agrega en `route.ts`)
       prompt,
     };
 
     try {
       const response = await fetch("/api/generate-images", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to generate image");
+      }
+
       setGeneratedImage(data.image_url);
     } catch (error) {
-      console.error("Error generating image:", error);
+      console.error("❌ Error generating image:", error);
+      alert("Error generating image. Check the console for details.");
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +63,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <Header />
-        <ImageUploader onImageUpload={setImage} /> {/* ✅ Se pasa Base64 en lugar de File */}
+        <ImageUploader onImageUpload={setImageBase64} /> {/* ✅ Enviamos Base64 directo */}
         <PromptInput
           onSubmit={handleSubmit}
           isLoading={isLoading}
