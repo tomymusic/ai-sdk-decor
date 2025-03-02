@@ -4,7 +4,8 @@ import { useState } from "react";
 import { PromptInput } from "@/components/PromptInput";
 import { Header } from "@/components/Header";
 import { ImageUploader } from "@/components/ImageUploader";
-import Image from "next/image"; // ✅ Se usa correctamente
+import Image from "next/image";
+import CompareImage from "react-compare-image"; // ✅ Importamos el slider
 import { Suggestion } from "@/lib/suggestions";
 
 interface ImagePlaygroundProps {
@@ -12,9 +13,9 @@ interface ImagePlaygroundProps {
 }
 
 export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
-  const [image, setImage] = useState<string | null>(null); // Imagen en Base64
+  const [image, setImage] = useState<string | null>(null); // Imagen subida
   const [isLoading, setIsLoading] = useState(false);
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null); // Imagen generada
   const [showProviders, setShowProviders] = useState(true);
   const [mode, setMode] = useState<"performance" | "quality">("performance");
 
@@ -54,7 +55,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
       }
 
       if (contentType?.includes("application/json")) {
-        // ✅ Caso 1: Si la API devuelve una URL válida
+        // ✅ Caso 1: La API devuelve una URL directa
         const data = await response.json();
         console.log("✅ Imagen recibida:", data.image_url);
 
@@ -64,7 +65,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           throw new Error("Formato de imagen inválido");
         }
       } else if (contentType?.includes("application/octet-stream")) {
-        // ✅ Caso 2: Si la API devuelve un Stream de imagen (Blob)
+        // ✅ Caso 2: La API devuelve un Stream de imagen (Blob)
         const blob = await response.blob();
         const blobUrl = URL.createObjectURL(blob);
         console.log("✅ Imagen convertida a Blob URL:", blobUrl);
@@ -93,11 +94,29 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           mode={mode}
           onModeChange={handleModeChange}
         />
+
+        {/* ✅ SOLO mostramos el slider si hay una imagen subida y generada */}
+        {image && generatedImage && (
+          <div className="mt-6">
+            <h2 className="text-center text-lg font-semibold">Generated Image Comparison</h2>
+            <div className="mt-4 w-full flex justify-center">
+              <CompareImage
+                leftImage={image}
+                rightImage={generatedImage}
+                leftImageAlt="Original Image"
+                rightImageAlt="Generated Image"
+                sliderLineColor="#ffffff"
+                handleSize={30}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* ✅ Mantiene la imagen generada en el mismo lugar de antes */}
         {generatedImage && (
           <div className="mt-6">
             <h2 className="text-center text-lg font-semibold">Generated Image</h2>
             <div className="mt-4 w-full rounded-lg overflow-hidden flex justify-center">
-              {/* ✅ Se usa `next/image` correctamente */}
               <Image
                 src={generatedImage}
                 alt="Generated"
