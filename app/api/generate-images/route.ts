@@ -24,54 +24,44 @@ export async function POST(req: NextRequest) {
       auth: process.env.REPLICATE_API_TOKEN!,
     });
 
-    // 🔥 Ejecutamos la API de Replicate
-    let prediction = await replicate.run(
-      "lucataco/sdxl-controlnet:06d6fae3b75ab68a28cd2900afa6033166910dd09fd9751047043a5bbb4c184b",
-      {
-        input: {
-          prompt,
-          image: `data:image/png;base64,${imageBase64}`,
-        },
-      }
-    );
+    // 🔥 Ejecutamos la API de Replicate usando `fetch` para manejar bien la respuesta
+    const prediction = await replicate.predictions.create({
+      version: "854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
+      input: {
+        prompt,
+        image: `data:image/png;base64,${imageBase64}`,
+      },
+    });
 
     console.log("🔍 Predicción iniciada en Replicate:", prediction);
 
-    if (!prediction || typeof prediction !== "object") {
-      console.error("❌ Respuesta inválida de Replicate", prediction);
-      return NextResponse.json({ error: "Failed to get prediction response" }, { status: 500 });
+    if (!prediction || !prediction.urls || !prediction.urls.get) {
+      console.error("❌ Replicate no devolvió una URL de predicción válida", prediction);
+      return NextResponse.json({ error: "Failed to initiate prediction" }, { status: 500 });
     }
 
-    // ✅ Si la respuesta es un ReadableStream, la procesamos
-    if (prediction instanceof ReadableStream) {
-      console.log("📜 Decodificando ReadableStream...");
-      const reader = prediction.getReader();
-      const decoder = new TextDecoder();
-      let responseText = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        responseText += decoder.decode(value, { stream: true });
-      }
-
-      console.log("📜 Respuesta de Replicate decodificada:", responseText);
-      prediction = JSON.parse(responseText); // Ahora `prediction` puede ser reasignado
+    // 🔄 Esperamos la respuesta de Replicate
+    let response;
+    while (!response || response.status !== "succeeded") {
+      await new Promise((res) => setTimeout(res, 2000)); // Esperamos 2 segundos entre cada consulta
+      response = await fetch(prediction.urls.get, {
+        headers: {
+          Authorization: `Token ${process.env.REPLICATE_API_TOKEN}`,
+        },
+      }).then((res) => res.json());
+      console.log("🔄 Estado de la predicción:", response.status);
     }
 
-    console.log("✅ Respuesta final de Replicate:", prediction);
+    console.log("✅ Respuesta final de Replicate:", response);
 
-    // ✅ Manejar diferentes estructuras de salida
+    // ✅ Verificamos si la respuesta contiene la propiedad `output`
     let finalImage: string | null = null;
-
-    if (typeof prediction.output === "string") {
-      finalImage = prediction.output; // ✅ Caso cuando `output` es una string (URL de la imagen)
-    } else if (Array.isArray(prediction.output) && prediction.output.length > 0) {
-      finalImage = prediction.output[prediction.output.length - 1]; // ✅ Caso cuando es un array
+    if (response.output && Array.isArray(response.output) && response.output.length > 0) {
+      finalImage = response.output[response.output.length - 1]; // Tomamos la última imagen generada
     }
 
     if (!finalImage) {
-      console.error("❌ Replicate no devolvió una imagen válida", prediction);
+      console.error("❌ Replicate no devolvió una imagen válida", response);
       return NextResponse.json({ error: "Failed to get image" }, { status: 500 });
     }
 
