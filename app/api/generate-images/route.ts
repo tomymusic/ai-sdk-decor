@@ -24,9 +24,9 @@ export async function POST(req: NextRequest) {
       auth: process.env.REPLICATE_API_TOKEN!,
     });
 
-    // 🔥 Ejecutamos la API de Replicate usando `fetch` para manejar bien la respuesta
+    // 🔥 Manteniendo el mismo flujo, pero con el nuevo modelo
     const prediction = await replicate.predictions.create({
-      version: "854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
+      version: "06d6fae3b75ab68a28cd2900afa6033166910dd09fd9751047043a5bbb4c184b", // Nuevo modelo
       input: {
         prompt,
         image: `data:image/png;base64,${imageBase64}`,
@@ -56,8 +56,11 @@ export async function POST(req: NextRequest) {
 
     // ✅ Verificamos si la respuesta contiene la propiedad `output`
     let finalImage: string | null = null;
-    if (response.output && Array.isArray(response.output) && response.output.length > 0) {
-      finalImage = response.output[response.output.length - 1]; // Tomamos la última imagen generada
+
+    if (typeof response.output === "string") {
+      finalImage = response.output; // ✅ Caso cuando `output` es una string (URL de la imagen)
+    } else if (Array.isArray(response.output) && response.output.length > 0) {
+      finalImage = response.output[response.output.length - 1]; // ✅ Caso cuando es un array
     }
 
     if (!finalImage) {
