@@ -4,7 +4,7 @@ import { useState } from "react";
 import { PromptInput } from "@/components/PromptInput";
 import { Header } from "@/components/Header";
 import { ImageUploader } from "@/components/ImageUploader";
-import CompareImage from "react-compare-image"; // ✅ Importamos el comparador
+import CompareImage from "react-compare-image"; 
 import { Suggestion } from "@/lib/suggestions";
 
 interface ImagePlaygroundProps {
@@ -12,7 +12,7 @@ interface ImagePlaygroundProps {
 }
 
 export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
-  const [image, setImage] = useState<string | null>(null); // Imagen en Base64
+  const [image, setImage] = useState<string | null>(null); 
   const [isLoading, setIsLoading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [showProviders, setShowProviders] = useState(true);
@@ -54,6 +54,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
       }
 
       if (contentType?.includes("application/json")) {
+        // ✅ Caso 1: La API devuelve una URL directa
         const data = await response.json();
         console.log("✅ Imagen recibida:", data.image_url);
 
@@ -63,10 +64,15 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           throw new Error("Formato de imagen inválido");
         }
       } else if (contentType?.includes("application/octet-stream")) {
+        // ✅ Caso 2: La API devuelve un Blob, lo convertimos a Base64
         const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        console.log("✅ Imagen convertida a Blob URL:", blobUrl);
-        setGeneratedImage(blobUrl);
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          const base64data = reader.result;
+          console.log("✅ Imagen convertida a Base64:", base64data);
+          setGeneratedImage(base64data as string);
+        };
       } else {
         throw new Error("Formato de respuesta desconocido");
       }
@@ -97,24 +103,41 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           <div className="mt-6">
             <h2 className="text-center text-lg font-semibold">Generated Image Comparison</h2>
             <div className="mt-4 w-full flex justify-center">
-              {generatedImage ? (
-                // ✅ Si hay imagen generada, usamos el comparador de imágenes
-                <CompareImage
-                  leftImage={image}
-                  rightImage={generatedImage}
-                  leftImageAlt="Original Image"
-                  rightImageAlt="Generated Image"
-                  sliderLineColor="#ffffff"
-                  handleSize={30}
-                />
-              ) : (
-                // ✅ Si NO hay imagen generada, solo mostramos la imagen subida
+              
+              {/* 🔍 Paso 1: Mostrar imágenes antes del slider */}
+              <div className="flex flex-col items-center">
+                <p className="font-semibold">Original Image</p>
                 <img
                   src={image}
                   alt="Uploaded Image"
-                  className="rounded-lg shadow-lg"
+                  className="rounded-lg shadow-lg mb-4"
                   style={{ maxWidth: "600px", height: "auto" }}
                 />
+                
+                {generatedImage && (
+                  <>
+                    <p className="font-semibold">Generated Image</p>
+                    <img
+                      src={generatedImage}
+                      alt="Generated Image"
+                      className="rounded-lg shadow-lg mb-4"
+                      style={{ maxWidth: "600px", height: "auto" }}
+                      onError={(e) => console.error("Error cargando imagen:", e)}
+                    />
+                  </>
+                )}
+              </div>
+
+              {/* 🔥 Paso 2: Si ambas imágenes son válidas, mostrar el slider */}
+              {generatedImage && (
+                <div className="mt-4">
+                  <CompareImage
+                    leftImage={image}
+                    rightImage={generatedImage}
+                    sliderLineColor="#ffffff"
+                    handleSize={30}
+                  />
+                </div>
               )}
             </div>
           </div>
