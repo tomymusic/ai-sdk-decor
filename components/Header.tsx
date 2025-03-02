@@ -42,7 +42,7 @@ export const Header = () => {
               <SparklesIcon />
               AI SDK
             </Link>
-            Image Generator
+            Decor
           </h1>
         </div>
         <Link
