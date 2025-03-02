@@ -4,7 +4,7 @@ import { useState } from "react";
 import { PromptInput } from "@/components/PromptInput";
 import { Header } from "@/components/Header";
 import { ImageUploader } from "@/components/ImageUploader";
-import CompareImage from "react-compare-image";
+import Image from "next/image"; // ✅ Se usa correctamente
 import { Suggestion } from "@/lib/suggestions";
 
 interface ImagePlaygroundProps {
@@ -12,13 +12,16 @@ interface ImagePlaygroundProps {
 }
 
 export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null>(null); // Imagen en Base64
   const [isLoading, setIsLoading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [showProviders, setShowProviders] = useState(true);
   const [mode, setMode] = useState<"performance" | "quality">("performance");
 
-  const toggleView = () => setShowProviders((prev) => !prev);
+  const toggleView = () => {
+    setShowProviders((prev) => !prev);
+  };
+
   const handleModeChange = (newMode: "performance" | "quality") => {
     setMode(newMode);
     setShowProviders(true);
@@ -31,20 +34,43 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     }
     setIsLoading(true);
 
+    const payload = {
+      imageBase64: image,
+      prompt,
+    };
+
     try {
       const response = await fetch("/api/generate-images", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64: image, prompt }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
 
-      if (!response.ok) throw new Error(`Error en la API: ${response.statusText}`);
+      const contentType = response.headers.get("content-type");
+      if (!response.ok) {
+        throw new Error(`Error en la API: ${response.statusText}`);
+      }
 
-      const data = await response.json();
-      if (typeof data.image_url === "string") {
-        setGeneratedImage(data.image_url);
+      if (contentType?.includes("application/json")) {
+        // ✅ Caso 1: Si la API devuelve una URL válida
+        const data = await response.json();
+        console.log("✅ Imagen recibida:", data.image_url);
+
+        if (typeof data.image_url === "string") {
+          setGeneratedImage(data.image_url);
+        } else {
+          throw new Error("Formato de imagen inválido");
+        }
+      } else if (contentType?.includes("application/octet-stream")) {
+        // ✅ Caso 2: Si la API devuelve un Stream de imagen (Blob)
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        console.log("✅ Imagen convertida a Blob URL:", blobUrl);
+        setGeneratedImage(blobUrl);
       } else {
-        throw new Error("Formato de imagen inválido");
+        throw new Error("Formato de respuesta desconocido");
       }
     } catch (error) {
       console.error("Error generando imagen:", error);
@@ -67,26 +93,19 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           mode={mode}
           onModeChange={handleModeChange}
         />
-
-        {image && (
+        {generatedImage && (
           <div className="mt-6">
-            <h2 className="text-center text-lg font-semibold">Generated Image Comparison</h2>
-            <div className="mt-4 w-full flex justify-center">
-              {!generatedImage ? (
-                <img
-                  src={image}
-                  alt="Uploaded Image"
-                  className="rounded-lg shadow-lg"
-                  style={{ maxWidth: "600px", height: "auto" }}
-                />
-              ) : (
-                <CompareImage
-                  leftImage={image}
-                  rightImage={generatedImage}
-                  sliderLineColor="#ffffff"
-                  handleSize={30}
-                />
-              )}
+            <h2 className="text-center text-lg font-semibold">Generated Image</h2>
+            <div className="mt-4 w-full rounded-lg overflow-hidden flex justify-center">
+              {/* ✅ Se usa `next/image` correctamente */}
+              <Image
+                src={generatedImage}
+                alt="Generated"
+                width={600}
+                height={400}
+                className="rounded-lg"
+                unoptimized={true} // ✅ Evita problemas con imágenes externas o Blob URLs
+              />
             </div>
           </div>
         )}
