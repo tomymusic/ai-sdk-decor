@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       auth: process.env.REPLICATE_API_TOKEN!,
     });
 
-    // 🔥 Ejecutamos la API de Replicate y obtenemos una predicción
+    // 🔥 Ejecutamos la API de Replicate
     const prediction = await replicate.run(
       "lucataco/sdxl-controlnet:06d6fae3b75ab68a28cd2900afa6033166910dd09fd9751047043a5bbb4c184b",
       {
@@ -42,12 +42,32 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to get prediction response" }, { status: 500 });
     }
 
-    // 🔄 Esperamos a que la predicción se complete si es necesario
+    // ✅ Si la respuesta es un ReadableStream, la procesamos
+    if (prediction instanceof ReadableStream) {
+      console.log("📜 Decodificando ReadableStream...");
+      const reader = prediction.getReader();
+      const decoder = new TextDecoder();
+      let responseText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        responseText += decoder.decode(value, { stream: true });
+      }
+
+      console.log("📜 Respuesta de Replicate decodificada:", responseText);
+      prediction = JSON.parse(responseText);
+    }
+
+    console.log("✅ Respuesta final de Replicate:", prediction);
+
+    // ✅ Manejar diferentes estructuras de salida
     let finalImage: string | null = null;
-    if (Array.isArray(prediction) && prediction.length > 0) {
-      finalImage = prediction[prediction.length - 1]; // Tomamos la última imagen generada
-    } else if (typeof prediction === "string") {
-      finalImage = prediction; // Si es un string, es la URL directa de la imagen
+
+    if (typeof prediction.output === "string") {
+      finalImage = prediction.output; // ✅ Caso cuando `output` es una string (URL de la imagen)
+    } else if (Array.isArray(prediction.output) && prediction.output.length > 0) {
+      finalImage = prediction.output[prediction.output.length - 1]; // ✅ Caso cuando es un array
     }
 
     if (!finalImage) {
