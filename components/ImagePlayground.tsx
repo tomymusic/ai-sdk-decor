@@ -91,20 +91,31 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           mode={mode}
           onModeChange={handleModeChange}
         />
-        
-        {/* ✅ Slider de comparación si ambas imágenes están disponibles */}
-        {image && generatedImage && (
+
+        {/* ✅ Sección de comparación de imágenes */}
+        {image && (
           <div className="mt-6">
             <h2 className="text-center text-lg font-semibold">Generated Image Comparison</h2>
             <div className="mt-4 w-full flex justify-center">
-              <CompareImage
-                leftImage={image}
-                rightImage={generatedImage}
-                leftImageAlt="Original Image"
-                rightImageAlt="Generated Image"
-                sliderLineColor="#ffffff" // Línea del slider en blanco
-                handleSize={30} // Tamaño del control del slider
-              />
+              {generatedImage ? (
+                // ✅ Si hay imagen generada, usamos el comparador de imágenes
+                <CompareImage
+                  leftImage={image}
+                  rightImage={generatedImage}
+                  leftImageAlt="Original Image"
+                  rightImageAlt="Generated Image"
+                  sliderLineColor="#ffffff"
+                  handleSize={30}
+                />
+              ) : (
+                // ✅ Si NO hay imagen generada, solo mostramos la imagen subida
+                <img
+                  src={image}
+                  alt="Uploaded Image"
+                  className="rounded-lg shadow-lg"
+                  style={{ maxWidth: "600px", height: "auto" }}
+                />
+              )}
             </div>
           </div>
         )}
