@@ -1,12 +1,12 @@
+
 "use client";
 
 import { useState } from "react";
 import { PromptInput } from "@/components/PromptInput";
 import { Header } from "@/components/Header";
 import { ImageUploader } from "@/components/ImageUploader";
-import Image from "next/image";
+import Image from "next/image"; // ✅ Se usa correctamente
 import { Suggestion } from "@/lib/suggestions";
-import ReactCompareImage from "react-compare-image"; // ✅ Slider de comparación
 
 interface ImagePlaygroundProps {
   suggestions?: Suggestion[];
@@ -55,6 +55,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
       }
 
       if (contentType?.includes("application/json")) {
+        // ✅ Caso 1: Si la API devuelve una URL válida
         const data = await response.json();
         console.log("✅ Imagen recibida:", data.image_url);
 
@@ -64,6 +65,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           throw new Error("Formato de imagen inválido");
         }
       } else if (contentType?.includes("application/octet-stream")) {
+        // ✅ Caso 2: Si la API devuelve un Stream de imagen (Blob)
         const blob = await response.blob();
         const blobUrl = URL.createObjectURL(blob);
         console.log("✅ Imagen convertida a Blob URL:", blobUrl);
@@ -92,31 +94,21 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           mode={mode}
           onModeChange={handleModeChange}
         />
-
-        {generatedImage && image ? (
+        {generatedImage && (
           <div className="mt-6">
             <h2 className="text-center text-lg font-semibold">Generated Image</h2>
             <div className="mt-4 w-full rounded-lg overflow-hidden flex justify-center">
-              {/* ✅ Slider de comparación entre original y generada */}
-              <ReactCompareImage leftImage={image} rightImage={generatedImage} />
+              {/* ✅ Se usa `next/image` correctamente */}
+              <Image
+                src={generatedImage}
+                alt="Generated"
+                width={600}
+                height={400}
+                className="rounded-lg"
+                unoptimized={true} // ✅ Evita problemas con imágenes externas o Blob URLs
+              />
             </div>
           </div>
-        ) : (
-          generatedImage && (
-            <div className="mt-6">
-              <h2 className="text-center text-lg font-semibold">Generated Image</h2>
-              <div className="mt-4 w-full rounded-lg overflow-hidden flex justify-center">
-                <Image
-                  src={generatedImage}
-                  alt="Generated"
-                  width={600}
-                  height={400}
-                  className="rounded-lg"
-                  unoptimized={true}
-                />
-              </div>
-            </div>
-          )
         )}
       </div>
     </div>
