@@ -24,44 +24,34 @@ export async function POST(req: NextRequest) {
       auth: process.env.REPLICATE_API_TOKEN!,
     });
 
-    // 🔥 Ejecutamos la API de Replicate usando `fetch` para manejar bien la respuesta
-    const prediction = await replicate.predictions.create({
-      version: "06d6fae3b75ab68a28cd2900afa6033166910dd09fd9751047043a5bbb4c184b",
-      input: {
-        prompt,
-        image: `data:image/png;base64,${imageBase64}`,
-      },
-    });
+    // 🔥 Ejecutamos la API de Replicate y obtenemos una predicción
+    const prediction = await replicate.run(
+      "lucataco/sdxl-controlnet:06d6fae3b75ab68a28cd2900afa6033166910dd09fd9751047043a5bbb4c184b",
+      {
+        input: {
+          prompt,
+          image: `data:image/png;base64,${imageBase64}`,
+        },
+      }
+    );
 
     console.log("🔍 Predicción iniciada en Replicate:", prediction);
 
-    if (!prediction || !prediction.urls || !prediction.urls.get) {
-      console.error("❌ Replicate no devolvió una URL de predicción válida", prediction);
-      return NextResponse.json({ error: "Failed to initiate prediction" }, { status: 500 });
+    if (!prediction || typeof prediction !== "object") {
+      console.error("❌ Respuesta inválida de Replicate", prediction);
+      return NextResponse.json({ error: "Failed to get prediction response" }, { status: 500 });
     }
 
-    // 🔄 Esperamos la respuesta de Replicate
-    let response;
-    while (!response || response.status !== "succeeded") {
-      await new Promise((res) => setTimeout(res, 2000)); // Esperamos 2 segundos entre cada consulta
-      response = await fetch(prediction.urls.get, {
-        headers: {
-          Authorization: `Token ${process.env.REPLICATE_API_TOKEN}`,
-        },
-      }).then((res) => res.json());
-      console.log("🔄 Estado de la predicción:", response.status);
-    }
-
-    console.log("✅ Respuesta final de Replicate:", response);
-
-    // ✅ Verificamos si la respuesta contiene la propiedad `output`
+    // 🔄 Esperamos a que la predicción se complete si es necesario
     let finalImage: string | null = null;
-    if (response.output && Array.isArray(response.output) && response.output.length > 0) {
-      finalImage = response.output[response.output.length - 1]; // Tomamos la última imagen generada
+    if (Array.isArray(prediction) && prediction.length > 0) {
+      finalImage = prediction[prediction.length - 1]; // Tomamos la última imagen generada
+    } else if (typeof prediction === "string") {
+      finalImage = prediction; // Si es un string, es la URL directa de la imagen
     }
 
     if (!finalImage) {
-      console.error("❌ Replicate no devolvió una imagen válida", response);
+      console.error("❌ Replicate no devolvió una imagen válida", prediction);
       return NextResponse.json({ error: "Failed to get image" }, { status: 500 });
     }
 
