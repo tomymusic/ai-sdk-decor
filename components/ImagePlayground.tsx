@@ -1,11 +1,11 @@
-
 "use client";
 
 import { useState } from "react";
 import { PromptInput } from "@/components/PromptInput";
 import { Header } from "@/components/Header";
 import { ImageUploader } from "@/components/ImageUploader";
-import Image from "next/image"; // ✅ Se usa correctamente
+import Image from "next/image"; 
+import CompareImage from "react-compare-image"; // ✅ Importamos el comparador
 import { Suggestion } from "@/lib/suggestions";
 
 interface ImagePlaygroundProps {
@@ -55,7 +55,6 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
       }
 
       if (contentType?.includes("application/json")) {
-        // ✅ Caso 1: Si la API devuelve una URL válida
         const data = await response.json();
         console.log("✅ Imagen recibida:", data.image_url);
 
@@ -65,7 +64,6 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           throw new Error("Formato de imagen inválido");
         }
       } else if (contentType?.includes("application/octet-stream")) {
-        // ✅ Caso 2: Si la API devuelve un Stream de imagen (Blob)
         const blob = await response.blob();
         const blobUrl = URL.createObjectURL(blob);
         console.log("✅ Imagen convertida a Blob URL:", blobUrl);
@@ -94,18 +92,19 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           mode={mode}
           onModeChange={handleModeChange}
         />
-        {generatedImage && (
+        
+        {/* ✅ Slider de comparación si ambas imágenes están disponibles */}
+        {image && generatedImage && (
           <div className="mt-6">
-            <h2 className="text-center text-lg font-semibold">Generated Image</h2>
-            <div className="mt-4 w-full rounded-lg overflow-hidden flex justify-center">
-              {/* ✅ Se usa `next/image` correctamente */}
-              <Image
-                src={generatedImage}
-                alt="Generated"
-                width={600}
-                height={400}
-                className="rounded-lg"
-                unoptimized={true} // ✅ Evita problemas con imágenes externas o Blob URLs
+            <h2 className="text-center text-lg font-semibold">Generated Image Comparison</h2>
+            <div className="mt-4 w-full flex justify-center">
+              <CompareImage
+                leftImage={image}
+                rightImage={generatedImage}
+                leftImageAlt="Original Image"
+                rightImageAlt="Generated Image"
+                sliderLineColor="#ffffff" // Línea del slider en blanco
+                handleSize={30} // Tamaño del control del slider
               />
             </div>
           </div>
