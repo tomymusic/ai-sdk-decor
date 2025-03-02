@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
     // 🔥 Ejecutamos la API de Replicate usando `fetch` para manejar bien la respuesta
     const prediction = await replicate.predictions.create({
-      version: "854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
+      version: "06d6fae3b75ab68a28cd2900afa6033166910dd09fd9751047043a5bbb4c184b",
       input: {
         prompt,
         image: `data:image/png;base64,${imageBase64}`,
