@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     });
 
     // 🔥 Ejecutamos la API de Replicate
-    const prediction = await replicate.run(
+    let prediction = await replicate.run(
       "lucataco/sdxl-controlnet:06d6fae3b75ab68a28cd2900afa6033166910dd09fd9751047043a5bbb4c184b",
       {
         input: {
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
       }
 
       console.log("📜 Respuesta de Replicate decodificada:", responseText);
-      prediction = JSON.parse(responseText);
+      prediction = JSON.parse(responseText); // Ahora `prediction` puede ser reasignado
     }
 
     console.log("✅ Respuesta final de Replicate:", prediction);
