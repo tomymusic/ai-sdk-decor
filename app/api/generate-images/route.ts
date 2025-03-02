@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     });
 
     // 🔥 Ejecutamos la API de Replicate con un tipo explícito
-    let response: { output?: string[] } = await replicate.run(
+    const response: { output?: string[] } = await replicate.run(
       "jagilley/controlnet-hough:854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
       {
         input: {
