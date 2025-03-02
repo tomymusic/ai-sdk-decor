@@ -24,22 +24,38 @@ export async function POST(req: NextRequest) {
       auth: process.env.REPLICATE_API_TOKEN!,
     });
 
-    // 🔥 Ejecutamos la API de Replicate con un tipo explícito
-    const response: { output?: string[] } = await replicate.run(
-      "jagilley/controlnet-hough:854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
-      {
-        input: {
-          prompt,
-          image: `data:image/png;base64,${imageBase64}`,
-        },
-      }
-    );
+    // 🔥 Ejecutamos la API de Replicate usando `fetch` para manejar bien la respuesta
+    const prediction = await replicate.predictions.create({
+      version: "854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
+      input: {
+        prompt,
+        image: `data:image/png;base64,${imageBase64}`,
+      },
+    });
 
-    console.log("🔍 Respuesta de Replicate:", response);
+    console.log("🔍 Predicción iniciada en Replicate:", prediction);
+
+    if (!prediction || !prediction.urls || !prediction.urls.get) {
+      console.error("❌ Replicate no devolvió una URL de predicción válida", prediction);
+      return NextResponse.json({ error: "Failed to initiate prediction" }, { status: 500 });
+    }
+
+    // 🔄 Esperamos la respuesta de Replicate
+    let response;
+    while (!response || response.status !== "succeeded") {
+      await new Promise((res) => setTimeout(res, 2000)); // Esperamos 2 segundos entre cada consulta
+      response = await fetch(prediction.urls.get, {
+        headers: {
+          Authorization: `Token ${process.env.REPLICATE_API_TOKEN}`,
+        },
+      }).then((res) => res.json());
+      console.log("🔄 Estado de la predicción:", response.status);
+    }
+
+    console.log("✅ Respuesta final de Replicate:", response);
 
     // ✅ Verificamos si la respuesta contiene la propiedad `output`
     let finalImage: string | null = null;
-
     if (response.output && Array.isArray(response.output) && response.output.length > 0) {
       finalImage = response.output[response.output.length - 1]; // Tomamos la última imagen generada
     }
