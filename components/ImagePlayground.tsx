@@ -28,9 +28,8 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     setShowProviders(true);
   };
 
-  // ✅ Solución: ahora acepta `null` sin causar errores.
   const handleImageUpload = (imgBase64: string | null) => {
-    if (!imgBase64) return; // 🔥 Evita que `null` rompa la app.
+    if (!imgBase64) return;
     console.log("✅ Imagen subida por el usuario:", imgBase64);
     setImage(imgBase64);
   };
@@ -100,11 +99,11 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           onModeChange={handleModeChange}
         />
 
-        {/* ✅ Aplicamos el slider en la sección donde antes estaba solo la imagen generada */}
-        {image && generatedImage ? (
+        {/* ✅ Sección del slider */}
+        {image && generatedImage && (
           <div className="mt-6 w-full flex justify-center">
             <CompareImage
-              leftImage={image} // ✅ Imagen original subida por el usuario
+              leftImage={image} // ✅ Imagen original
               rightImage={generatedImage} // ✅ Imagen generada por la API
               leftImageAlt="Original Image"
               rightImageAlt="Generated Image"
@@ -112,23 +111,23 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
               handleSize={30}
             />
           </div>
-        ) : (
-          /* ✅ Si la imagen aún no se ha generado, mostramos solo la imagen original */
-          generatedImage && (
-            <div className="mt-6">
-              <h2 className="text-center text-lg font-semibold">Generated Image</h2>
-              <div className="mt-4 w-full rounded-lg overflow-hidden flex justify-center">
-                <Image
-                  src={generatedImage}
-                  alt="Generated"
-                  width={600}
-                  height={400}
-                  className="rounded-lg"
-                  unoptimized={true} // ✅ Evita problemas con imágenes externas o Blob URLs
-                />
-              </div>
+        )}
+
+        {/* ✅ Sección de la imagen generada (NO se elimina) */}
+        {generatedImage && (
+          <div className="mt-6">
+            <h2 className="text-center text-lg font-semibold">Generated Image</h2>
+            <div className="mt-4 w-full rounded-lg overflow-hidden flex justify-center">
+              <Image
+                src={generatedImage}
+                alt="Generated"
+                width={600}
+                height={400}
+                className="rounded-lg"
+                unoptimized={true} // ✅ Evita problemas con imágenes externas o Blob URLs
+              />
             </div>
-          )
+          </div>
         )}
       </div>
     </div>
