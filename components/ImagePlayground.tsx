@@ -104,13 +104,17 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
         />
 
         {image && generatedImage && (
-          <div className="mt-6 text-center">
-            <h2 className="text-lg font-semibold mb-4">Generated Image</h2>
+          <div className="mt-6 flex justify-center">
+            <h2 className="text-center text-lg font-semibold mb-4">Generated Image</h2>
             <div className="w-full max-w-2xl rounded-lg overflow-hidden flex justify-center">
               <ReactCompareSlider
                 itemOne={<ReactCompareSliderImage src={image} alt="Uploaded Image" style={{ objectFit: "contain", width: "100%", height: "auto", borderRadius: "12px" }} />}
                 itemTwo={<ReactCompareSliderImage src={generatedImage} alt="Generated Image" style={{ objectFit: "contain", width: "100%", height: "auto", borderRadius: "12px" }} />}
-                style={{ width: "100%", maxWidth: "600px", height: "auto", borderRadius: "12px" }}
+                handle={<div style={{
+                  width: "20px", height: "20px", backgroundColor: "rgba(255,255,255,0.8)", borderRadius: "50%",
+                  boxShadow: "0 2px 10px rgba(0,0,0,0.2)"
+                }} />}
+                style={{ width: "100%", maxWidth: "600px", height: "auto", borderRadius: "12px", margin: "0 auto" }}
               />
             </div>
           </div>
