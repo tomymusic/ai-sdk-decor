@@ -27,9 +27,15 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     setShowProviders(true);
   };
 
-  const handleImageUpload = (base64Image: string | null) => {
-    setImage(base64Image);
+  const handleImageUpload = (file: File) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onloadend = () => {
+    if (reader.result) {
+      setImage(reader.result as string); // ✅ Guarda la imagen correctamente
+    }
   };
+};
 
   const handleSubmit = async (prompt: string) => {
     if (!image) {
