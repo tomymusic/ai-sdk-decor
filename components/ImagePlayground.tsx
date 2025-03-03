@@ -105,7 +105,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
 
         {image && generatedImage && (
           <div className="mt-6 flex justify-center">
-            <h2 className="text-center text-lg font-semibold mb-4">Generated Image</h2>
+            
             <div className="w-full max-w-2xl rounded-lg overflow-hidden flex justify-center">
               <ReactCompareSlider
                 itemOne={<ReactCompareSliderImage src={image} alt="Uploaded Image" style={{ objectFit: "contain", width: "100%", height: "auto", borderRadius: "12px" }} />}
