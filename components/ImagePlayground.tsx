@@ -96,7 +96,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
         {image && generatedImage && (
           <div className="mt-6 flex justify-center">
             <h2 className="text-center text-lg font-semibold mb-4">Image Comparison</h2>
-            <div className="w-full max-w-2xl rounded-lg overflow-hidden shadow-lg">
+            <div className="w-full max-w-2xl rounded-lg overflow-hidden">
               <ReactCompareSlider
                 itemOne={<ReactCompareSliderImage src={image} alt="Uploaded Image" />}
                 itemTwo={<ReactCompareSliderImage src={generatedImage} alt="Generated Image" />}
