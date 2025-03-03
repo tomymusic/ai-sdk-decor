@@ -98,8 +98,8 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
             <h2 className="text-center text-lg font-semibold mb-4">Image Comparison</h2>
             <div className="w-full max-w-2xl rounded-lg overflow-hidden aspect-[3/2]">
               <ReactCompareSlider
-                itemOne={<ReactCompareSliderImage src={image} alt="Uploaded Image" style={{ objectFit: "cover", width: "100%", height: "100%" }} />}
-                itemTwo={<ReactCompareSliderImage src={generatedImage} alt="Generated Image" style={{ objectFit: "cover", width: "100%", height: "100%" }} />}
+                itemOne={<ReactCompareSliderImage src={image} alt="Uploaded Image" style={{ objectFit: "contain", width: "100%", height: "100%" }} />}
+                itemTwo={<ReactCompareSliderImage src={generatedImage} alt="Generated Image" style={{ objectFit: "contain", width: "100%", height: "100%" }} />}
                 style={{ width: "100%", height: "100%" }}
               />
             </div>
