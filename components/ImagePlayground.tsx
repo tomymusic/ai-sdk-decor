@@ -27,6 +27,11 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     setShowProviders(true);
   };
 
+  const handleImageUpload = (file: File) => {
+    const imageUrl = URL.createObjectURL(file);
+    setImage(imageUrl);
+  };
+
   const handleSubmit = async (prompt: string) => {
     if (!image) {
       alert("Please upload an image.");
@@ -78,7 +83,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <Header />
-        <ImageUploader onImageUpload={setImage} />
+        <ImageUploader onImageUpload={handleImageUpload} />
         <PromptInput
           onSubmit={handleSubmit}
           isLoading={isLoading}
@@ -89,14 +94,14 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           onModeChange={handleModeChange}
         />
 
-        {/* Mostrar el slider solo si ambas imágenes están disponibles */}
         {image && generatedImage && (
-          <div className="mt-6">
-            <h2 className="text-center text-lg font-semibold">Image Comparison</h2>
-            <div className="mt-4 w-full rounded-lg overflow-hidden flex justify-center">
+          <div className="mt-6 flex justify-center">
+            <h2 className="text-center text-lg font-semibold mb-4">Image Comparison</h2>
+            <div className="w-full max-w-2xl rounded-lg overflow-hidden shadow-lg">
               <ReactCompareSlider
                 itemOne={<ReactCompareSliderImage src={image} alt="Uploaded Image" />}
                 itemTwo={<ReactCompareSliderImage src={generatedImage} alt="Generated Image" />}
+                style={{ width: "100%", height: "auto" }}
               />
             </div>
           </div>
