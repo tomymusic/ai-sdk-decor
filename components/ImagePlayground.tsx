@@ -14,6 +14,7 @@ interface ImagePlaygroundProps {
 
 export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
   const [image, setImage] = useState<string | null>(null); // Imagen subida por el usuario
+  const [imageURL, setImageURL] = useState<string | null>(null); // URL de la imagen subida para el slider
   const [isLoading, setIsLoading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null); // Imagen generada por la API
   const [showProviders, setShowProviders] = useState(true);
@@ -28,10 +29,21 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     setShowProviders(true);
   };
 
+  // ✅ Extraemos correctamente la imagen subida y la convertimos a una URL usable
   const handleImageUpload = (imgBase64: string | null) => {
     if (!imgBase64) return;
     console.log("✅ Imagen subida por el usuario:", imgBase64);
     setImage(imgBase64);
+
+    // Convertimos la imagen base64 a una URL usable para el slider
+    const blob = fetch(imgBase64)
+      .then((res) => res.blob())
+      .then((blob) => URL.createObjectURL(blob));
+    
+    blob.then((url) => {
+      console.log("✅ URL de imagen para slider:", url);
+      setImageURL(url);
+    });
   };
 
   const handleSubmit = async (prompt: string) => {
@@ -99,12 +111,12 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           onModeChange={handleModeChange}
         />
 
-        {/* ✅ Sección del slider */}
-        {image && generatedImage && (
+        {/* ✅ Sección del slider (se coloca en la misma ubicación que la imagen generada) */}
+        {imageURL && generatedImage && (
           <div className="mt-6 w-full flex justify-center">
             <CompareImage
-              leftImage={image} // ✅ Imagen original
-              rightImage={generatedImage} // ✅ Imagen generada por la API
+              leftImage={imageURL} // ✅ URL de la imagen original en formato usable
+              rightImage={generatedImage} // ✅ Imagen generada
               leftImageAlt="Original Image"
               rightImageAlt="Generated Image"
               sliderLineColor="#ffffff"
@@ -113,7 +125,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           </div>
         )}
 
-        {/* ✅ Sección de la imagen generada (NO se elimina) */}
+        {/* ✅ Imagen generada se muestra en su posición original */}
         {generatedImage && (
           <div className="mt-6">
             <h2 className="text-center text-lg font-semibold">Generated Image</h2>
