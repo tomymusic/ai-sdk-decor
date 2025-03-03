@@ -28,8 +28,11 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
   };
 
   const handleImageUpload = (file: File) => {
-    const imageUrl = URL.createObjectURL(file);
-    setImage(imageUrl);
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setImage(reader.result as string); // ✅ Convierte a Base64 y almacena
+    };
   };
 
   const handleSubmit = async (prompt: string) => {
@@ -101,7 +104,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
               <ReactCompareSlider
                 itemOne={<ReactCompareSliderImage src={image} alt="Uploaded Image" />}
                 itemTwo={<ReactCompareSliderImage src={generatedImage} alt="Generated Image" />}
-                style={{ width: "600px", height: "400px", borderRadius: "12px" }}
+                style={{ width: "600px", height: "400px" }}
               />
             </div>
           </div>
