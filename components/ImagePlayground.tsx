@@ -45,8 +45,11 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     }
     setIsLoading(true);
 
+    // Remover el prefijo antes de enviar la imagen a la API
+    const base64WithoutPrefix = image.split(",")[1];
+
     const payload = {
-      imageBase64: image,
+      imageBase64: base64WithoutPrefix, // ✅ Ahora la API recibe solo el Base64 puro
       prompt,
     };
 
