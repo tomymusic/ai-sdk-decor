@@ -4,7 +4,6 @@ import { useState } from "react";
 import { PromptInput } from "@/components/PromptInput";
 import { Header } from "@/components/Header";
 import { ImageUploader } from "@/components/ImageUploader";
-import Image from "next/image";
 import { Suggestion } from "@/lib/suggestions";
 import { ReactCompareSlider, ReactCompareSliderImage } from "react-compare-slider";
 
