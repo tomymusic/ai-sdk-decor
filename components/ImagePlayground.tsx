@@ -27,19 +27,15 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     setShowProviders(true);
   };
 
-  const handleImageUpload = (file: File | null) => {
-    if (!file) {
+  const handleImageUpload = (base64Image: string | null) => {
+    if (!base64Image) {
       setImage(null);
       return;
     }
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      if (reader.result) {
-        setImage(reader.result as string);
-      }
-    };
+    // Restaurar el prefijo Base64
+    const completeBase64 = `data:image/png;base64,${base64Image}`;
+    setImage(completeBase64);
   };
 
   const handleSubmit = async (prompt: string) => {
