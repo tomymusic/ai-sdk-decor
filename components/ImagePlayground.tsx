@@ -101,7 +101,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
               <ReactCompareSlider
                 itemOne={<ReactCompareSliderImage src={image} alt="Uploaded Image" />}
                 itemTwo={<ReactCompareSliderImage src={generatedImage} alt="Generated Image" />}
-                style={{ width: "100%", height: "auto" }}
+                style={{ width: "600px", height: "400px", borderRadius: "12px" }}
               />
             </div>
           </div>
