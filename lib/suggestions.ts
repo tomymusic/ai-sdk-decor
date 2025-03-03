@@ -3,116 +3,88 @@ export interface Suggestion {
   prompt: string;
 }
 
-const artStyles = ["anime", "art nouveau", "ukiyo-e", "watercolor"];
+const artStyles = ["modern minimalism", "mid-century modern", "bohemian", "industrial", "art deco", "Scandinavian"];
 
 const basePrompts: { text: string; prompt: string }[] = [
   {
-    text: "Salamander Dusk",
-    prompt: "A salamander at dusk in a forest pond",
+    text: "Cozy Living Room",
+    prompt: "A warm and inviting living room with soft lighting and a modern fireplace",
   },
   {
-    text: "Sultry Chicken",
-    prompt:
-      "A sultry chicken peering around the corner from shadows, clearly up to no good",
+    text: "Luxury Kitchen",
+    prompt: "A sleek and stylish kitchen with marble countertops and gold accents",
   },
   {
-    text: "Cat Vercel",
-    prompt: "A cat launching its website on Vercel",
+    text: "Boho Bedroom",
+    prompt: "A cozy bedroom filled with plants, natural textures, and soft pastel tones",
   },
   {
-    text: "Red Panda",
-    prompt:
-      "A red panda sipping tea under cherry blossoms at sunset with Mount Fuji in the background",
+    text: "Minimalist Office",
+    prompt: "A modern home office with clean lines, neutral colors, and smart lighting",
   },
   {
-    text: "Beach Otter",
-    prompt: "A mischievous otter surfing the waves in Bali at golden hour",
+    text: "Industrial Loft",
+    prompt: "A spacious loft with exposed brick walls, metal beams, and warm wood flooring",
   },
   {
-    text: "Badger Ramen",
-    prompt: "A pensive honey badger eating a bowl of ramen in Osaka",
+    text: "Scandinavian Dining Room",
+    prompt: "A dining room with minimalist wooden furniture, soft lighting, and neutral tones",
   },
   {
-    text: "Zen Frog",
-    prompt:
-      "A frog meditating on a lotus leaf in a tranquil forest pond at dawn, surrounded by fireflies",
+    text: "Art Deco Lounge",
+    prompt: "A glamorous lounge with velvet furniture, geometric patterns, and gold accents",
   },
   {
-    text: "Macaw Love",
-    prompt:
-      "A colorful macaw delivering a love letter, flying over the Grand Canyon at sunrise",
+    text: "Modern Bathroom",
+    prompt: "A spa-like bathroom with sleek fixtures, ambient lighting, and a rain shower",
   },
   {
-    text: "Fox Painting",
-    prompt: "A fox walking through a field of lavender with a golden sunset",
+    text: "Elegant Entryway",
+    prompt: "A grand entryway with a statement chandelier, modern console table, and mirror wall",
   },
   {
-    text: "Armadillo Aerospace",
-    prompt:
-      "An armadillo in a rocket at countdown preparing to blast off to Mars",
+    text: "Chic Balcony",
+    prompt: "A stylish outdoor balcony with cozy seating, fairy lights, and greenery",
   },
   {
-    text: "Penguin Delight",
-    prompt: "A penguin in pajamas eating ice cream while watching television",
+    text: "Sophisticated Library",
+    prompt: "A home library with floor-to-ceiling bookshelves, warm lighting, and a classic armchair",
   },
   {
-    text: "Echidna Library",
-    prompt:
-      "An echidna reading a book in a cozy library built into the branches of a eucalyptus tree",
+    text: "Coastal Retreat",
+    prompt: "A serene living space with ocean views, light wood accents, and white furniture",
   },
   {
-    text: "Capybara Onsen",
-    prompt:
-      "A capybara relaxing in a hot spring surrounded by snow-covered mountains with a waterfall in the background",
+    text: "Glamorous Walk-In Closet",
+    prompt: "A luxurious walk-in closet with custom shelving, LED lighting, and a central island",
   },
   {
-    text: "Lion Throne",
-    prompt:
-      "A regal lion wearing a crown, sitting on a throne in a jungle palace, with waterfalls in the distance",
+    text: "Vintage Cafe Corner",
+    prompt: "A cozy cafe-inspired kitchen nook with vintage decor, warm lighting, and a coffee station",
   },
   {
-    text: "Dolphin Glow",
-    prompt:
-      "A dolphin leaping through a glowing ring of bioluminescence under a starry sky",
+    text: "Luxury Penthouse",
+    prompt: "A high-end penthouse living room with floor-to-ceiling windows and a skyline view",
   },
   {
-    text: "Owl Detective",
-    prompt:
-      "An owl wearing a monocle and top hat, solving a mystery in a misty forest at midnight",
+    text: "Serene Zen Garden",
+    prompt: "A minimalist Japanese-style garden with stone pathways, bamboo, and a water feature",
   },
   {
-    text: "Jellyfish Cathedral",
-    prompt:
-      "A jellyfish floating gracefully in an underwater cathedral made of coral and glass",
+    text: "Bold Eclectic Space",
+    prompt: "A vibrant living area with bold colors, mixed patterns, and curated art pieces",
   },
   {
-    text: "Platypus River",
-    prompt: "A platypus foraging in a river with a sunset in the background",
+    text: "Opulent Master Bedroom",
+    prompt: "A lavish master bedroom with a grand bed, plush fabrics, and gold accents",
   },
   {
-    text: "Chameleon Urban",
-    prompt:
-      "A chameleon blending into a graffiti-covered wall in an urban jungle",
+    text: "Dreamy Attic Retreat",
+    prompt: "A cozy attic space with sloped ceilings, warm lighting, and a reading nook",
   },
   {
-    text: "Tortoise Oasis",
-    prompt:
-      "A giant tortoise slowly meandering its way to an oasis in the desert",
-  },
-  {
-    text: "Hummingbird Morning",
-    prompt:
-      "A hummingbird sipping nectar from a purple bougainvillea at sunrise, captured mid-flight",
-  },
-  {
-    text: "Polar Bear",
-    prompt:
-      "A polar bear clambering onto an iceberg to greet a friendly harbor seal as dusk falls",
-  },
-  {
-    text: "Lemur Sunbathing",
-    prompt:
-      "A ring-tailed lemur sunbathing on a rock in Madagascar in early morning light",
+    text: "Tropical Paradise Patio",
+    prompt: "An outdoor patio with lush plants, rattan furniture, and ambient string lights",
   },
 ];
 
@@ -131,8 +103,6 @@ export function getRandomSuggestions(count: number = 5): Suggestion[] {
 
   return shuffledPrompts.slice(0, count).map((item, index) => ({
     text: item.text,
-    prompt: `${item.prompt}, in the style of ${
-      shuffledStyles[index % shuffledStyles.length]
-    }`,
+    prompt: `${item.prompt}, in the style of ${shuffledStyles[index % shuffledStyles.length]}`,
   }));
 }
