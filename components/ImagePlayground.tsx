@@ -28,7 +28,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
   };
 
   const handleImageUpload = (base64Image: string | null) => {
-    setImage(base64Image); // ✅ Ahora recibe y almacena Base64
+    setImage(base64Image);
   };
 
   const handleSubmit = async (prompt: string) => {
@@ -96,10 +96,11 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
         {image && generatedImage && (
           <div className="mt-6 flex justify-center">
             <h2 className="text-center text-lg font-semibold mb-4">Image Comparison</h2>
-            <div className="w-full max-w-2xl rounded-lg overflow-hidden">
+            <div className="w-full max-w-2xl rounded-lg overflow-hidden aspect-[3/2]">
               <ReactCompareSlider
-                itemOne={<ReactCompareSliderImage src={image} alt="Uploaded Image" />}
-                itemTwo={<ReactCompareSliderImage src={generatedImage} alt="Generated Image" />}
+                itemOne={<ReactCompareSliderImage src={image} alt="Uploaded Image" style={{ objectFit: "cover", width: "100%", height: "100%" }} />}
+                itemTwo={<ReactCompareSliderImage src={generatedImage} alt="Generated Image" style={{ objectFit: "cover", width: "100%", height: "100%" }} />}
+                style={{ width: "100%", height: "100%" }}
               />
             </div>
           </div>
