@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   try {
     const response = await fetch(
-      `https://${process.env.SHOPIFY_STORE}/admin/api/2023-04/products.json`,
+      `https://${process.env.SHOPIFY_STORE}/admin/api/2025-01/products.json`,
       {
         headers: {
           "X-Shopify-Access-Token": process.env.SHOPIFY_API_KEY,
