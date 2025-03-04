@@ -41,10 +41,10 @@ export async function POST(req: NextRequest) {
 // 📌 Ruta dinámica para servir imágenes guardadas temporalmente
 export async function GET(
   req: NextRequest, 
-  context: { params?: { filename?: string } } // Se asegura de manejar los parámetros opcionales
+  context: { params: { filename: string } } // 🔥 Ajustamos la estructura correcta
 ) {
   try {
-    const filename = context?.params?.filename;
+    const filename = context.params.filename;
     
     if (!filename) {
       console.error("❌ [Serve Image] No se proporcionó un nombre de archivo válido");
