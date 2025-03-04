@@ -19,7 +19,7 @@ export default function Page() {
         router.replace(`/?host=${host}`);
       }
     }
-  }, []);
+  }, [router]); // ✅ Agregamos `router` a las dependencias
 
   return <ImagePlayground suggestions={getRandomSuggestions()} />;
 }
