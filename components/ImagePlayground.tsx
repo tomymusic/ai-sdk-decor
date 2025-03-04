@@ -12,7 +12,7 @@ interface ImagePlaygroundProps {
 }
 
 export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
-  const [image, setImage] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [showProviders, setShowProviders] = useState(true);
@@ -27,29 +27,19 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     setShowProviders(true);
   };
 
-  const handleImageUpload = (base64Image: string | null) => {
-    if (!base64Image) {
-      setImage(null);
-      return;
-    }
-
-    // Restaurar el prefijo Base64
-    const completeBase64 = `data:image/png;base64,${base64Image}`;
-    setImage(completeBase64);
+  const handleImageUpload = (imageUrl: string | null) => {
+    setImageUrl(imageUrl);
   };
 
   const handleSubmit = async (prompt: string) => {
-    if (!image) {
+    if (!imageUrl) {
       alert("Please upload an image.");
       return;
     }
     setIsLoading(true);
 
-    // Remover el prefijo antes de enviar la imagen a la API
-    const base64WithoutPrefix = image.split(",")[1];
-
     const payload = {
-      imageBase64: base64WithoutPrefix, // ✅ Ahora la API recibe solo el Base64 puro
+      userImage: imageUrl, // ✅ Ahora enviamos la URL de la imagen en vez de Base64
       prompt,
     };
 
@@ -62,24 +52,11 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
         body: JSON.stringify(payload),
       });
 
-      const contentType = response.headers.get("content-type");
-      if (!response.ok) {
-        throw new Error(`Error en la API: ${response.statusText}`);
-      }
-
-      if (contentType?.includes("application/json")) {
-        const data = await response.json();
-        if (typeof data.image_url === "string") {
-          setGeneratedImage(data.image_url);
-        } else {
-          throw new Error("Formato de imagen inválido");
-        }
-      } else if (contentType?.includes("application/octet-stream")) {
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        setGeneratedImage(blobUrl);
+      const data = await response.json();
+      if (typeof data.image_url === "string") {
+        setGeneratedImage(data.image_url);
       } else {
-        throw new Error("Formato de respuesta desconocido");
+        throw new Error("Formato de imagen inválido");
       }
     } catch (error) {
       console.error("Error generando imagen:", error);
@@ -103,12 +80,11 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           onModeChange={handleModeChange}
         />
 
-        {image && generatedImage && (
+        {imageUrl && generatedImage && (
           <div className="mt-6 flex justify-center">
-            
             <div className="w-full max-w-2xl rounded-lg overflow-hidden flex justify-center">
               <ReactCompareSlider
-                itemOne={<ReactCompareSliderImage src={image} alt="Uploaded Image" style={{ objectFit: "contain", width: "100%", height: "auto", borderRadius: "12px" }} />}
+                itemOne={<ReactCompareSliderImage src={imageUrl} alt="Uploaded Image" style={{ objectFit: "contain", width: "100%", height: "auto", borderRadius: "12px" }} />}
                 itemTwo={<ReactCompareSliderImage src={generatedImage} alt="Generated Image" style={{ objectFit: "contain", width: "100%", height: "auto", borderRadius: "12px" }} />}
                 handle={<div style={{
                   width: "20px", height: "20px", backgroundColor: "rgba(255,255,255,0.8)", borderRadius: "50%",
