@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     const prediction = await replicate.predictions.create({
       version: "c871bb9b046607b680449ecbae55fd8c6d945e0a1948644bf2361b3d021d3ff4", // Nuevo modelo dm-vton
       input: {
-        human_img: `data:image/png;base64,${userImage}`, // 📸 Imagen del usuario en Base64
+        human_img: userImage,                         // 📸 Imagen del usuario (URL)
         garm_img: productImage,                       // 👕 Imagen del producto (URL)
         garment_des: productDescription,              // 📄 Descripción de la prenda
         category: productCategory,                    // 🏷️ Solo upper_body, lower_body, dresses
