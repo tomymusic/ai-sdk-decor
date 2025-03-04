@@ -23,8 +23,10 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer());
     await writeFile(filePath, buffer);
 
-    // Generar la URL temporal
-    const imageUrl = `${process.env.VERCEL_URL || "http://localhost:3000"}/api/tmp/${fileName}`;
+    // Generar la URL temporal usando el host actual
+    const host = `https://${req.headers.get("host")}`;
+    const imageUrl = `${host}/api/tmp/${fileName}`;
+
     console.log("✅ Imagen guardada temporalmente:", imageUrl);
 
     return NextResponse.json({ imageUrl }, { status: 200 });
