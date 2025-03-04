@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       version: "c871bb9b046607b680449ecbae55fd8c6d945e0a1948644bf2361b3d021d3ff4", // Nuevo modelo dm-vton
       input: {
         human_img: `data:image/png;base64,${userImage}`, // 📸 Imagen del usuario en Base64
-        garment_img: productImage,                       // 👕 Imagen del producto (URL)
+        garm_img: productImage,                       // 👕 Imagen del producto (URL)
         garment_des: productDescription                  // 📄 Descripción de la prenda
       },
     });
