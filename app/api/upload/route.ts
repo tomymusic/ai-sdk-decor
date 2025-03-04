@@ -39,10 +39,11 @@ export async function POST(req: NextRequest) {
 }
 
 // 📌 Ruta dinámica para servir imágenes guardadas temporalmente
-export async function GET(req: NextRequest, { params }: { params: { filename: string } }) {
+export async function GET(req: NextRequest, context: { params: { filename: string } }) {
   try {
+    const { filename } = context.params;
     const tempDir = "/tmp"; // Carpeta temporal en Vercel
-    const filePath = path.join(tempDir, params.filename);
+    const filePath = path.join(tempDir, filename);
 
     console.log(`📢 [Serve Image] Buscando archivo: ${filePath}`);
 
