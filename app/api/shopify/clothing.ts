@@ -1,5 +1,12 @@
 import { NextResponse } from "next/server";
 
+// Definir el tipo para los productos de Shopify
+interface ShopifyProduct {
+  title: string;
+  product_type: string;
+  tags: string;
+}
+
 // Función para clasificar productos automáticamente
 function classifyClothing(title: string, productType: string, tags: string[]): string | null {
   console.log("📢 [ClassifyClothing] Procesando producto:", title, "|", productType, "|", tags);
@@ -80,13 +87,13 @@ export async function GET() {
     }
 
     const data = await response.json();
-    const products = data.products;
+    const products: ShopifyProduct[] = data.products;
 
     console.log(`📦 [Shopify API] ${products.length} productos recibidos`);
 
     // Filtrar y clasificar productos de ropa
     const clothingProducts = products
-      .map((product) => {
+      .map((product: ShopifyProduct) => {
         const category = classifyClothing(product.title, product.product_type, product.tags.split(", "));
         return category ? { ...product, category } : null;
       })
