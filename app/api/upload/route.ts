@@ -1,37 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
+import cloudinary from "cloudinary";
+
+// 🔥 Configuración de Cloudinary con credenciales desde Vercel
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function POST(req: NextRequest) {
   try {
-    console.log("📌 Recibiendo imagen para generar URL temporal...");
-    
-    const formData = await req.formData();
-    const file = formData.get("file");
+    console.log("📌 Recibiendo imagen para subir a Cloudinary...");
 
-    if (!file || !(file instanceof Blob)) {
+    const formData = await req.formData();
+    const file = formData.get("file") as File;
+
+    if (!file) {
       console.error("❌ No se envió una imagen válida");
       return NextResponse.json({ error: "Invalid image file" }, { status: 400 });
     }
 
-    // Crear un nombre único para la imagen
-    const fileName = `${uuidv4()}.png`;
-    const filePath = path.join("/tmp", fileName);
+    // 📸 Convertir la imagen a Base64 para Cloudinary
+    const arrayBuffer = await file.arrayBuffer();
+    const base64Image = Buffer.from(arrayBuffer).toString("base64");
+    const dataUri = `data:image/png;base64,${base64Image}`;
 
-    // Leer la imagen y guardarla temporalmente en /tmp
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(filePath, buffer);
+    // 🚀 Subir imagen a Cloudinary
+    const uploadResponse = await cloudinary.v2.uploader.upload(dataUri, {
+      folder: "user_uploads",
+    });
 
-    // Generar la URL pública con el nuevo endpoint
-    const host = `https://${req.headers.get("host")}`;
-    const imageUrl = `${host}/api/tmp/${fileName}`;
+    console.log("✅ Imagen subida con éxito:", uploadResponse.secure_url);
 
-    console.log("✅ Imagen guardada temporalmente:", imageUrl);
-
-    return NextResponse.json({ imageUrl }, { status: 200 });
+    return NextResponse.json({ imageUrl: uploadResponse.secure_url }, { status: 200 });
   } catch (error) {
-    console.error("❌ Error al procesar la imagen:", error);
+    console.error("❌ Error al subir imagen a Cloudinary:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
