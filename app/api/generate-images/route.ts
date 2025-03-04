@@ -12,12 +12,19 @@ export async function POST(req: NextRequest) {
     console.log("📌 API recibió una solicitud");
 
     // ✅ Recibimos ambas imágenes y la descripción de la prenda
-    const { userImage, productImage, productDescription } = await req.json();
-    console.log("✅ Recibido en la API:", { userImageLength: userImage?.length, productImage, productDescription });
+    const { userImage, productImage, productDescription, productCategory } = await req.json();
+    console.log("✅ Recibido en la API:", { userImageLength: userImage?.length, productImage, productDescription, productCategory });
 
-    if (!userImage || !productImage || !productDescription) {
-      console.error("❌ Faltan datos: userImage, productImage o productDescription", { userImageLength: userImage?.length, productImage, productDescription });
-      return NextResponse.json({ error: "User image, product image, and product description are required" }, { status: 400 });
+    if (!userImage || !productImage || !productDescription || !productCategory) {
+      console.error("❌ Faltan datos: userImage, productImage, productDescription o productCategory", { userImageLength: userImage?.length, productImage, productDescription, productCategory });
+      return NextResponse.json({ error: "User image, product image, product description, and product category are required" }, { status: 400 });
+    }
+
+    // 🔥 Asegurar que la categoría solo sea una de las 3 permitidas
+    const validCategories = ["upper_body", "lower_body", "dresses"];
+    if (!validCategories.includes(productCategory)) {
+      console.error("❌ Error: La categoría del producto no es válida para este modelo.");
+      return NextResponse.json({ error: "Product category is not supported." }, { status: 400 });
     }
 
     console.log("🔄 Enviando solicitud a Replicate...");
@@ -31,7 +38,13 @@ export async function POST(req: NextRequest) {
       input: {
         human_img: `data:image/png;base64,${userImage}`, // 📸 Imagen del usuario en Base64
         garm_img: productImage,                       // 👕 Imagen del producto (URL)
-        garment_des: productDescription                  // 📄 Descripción de la prenda
+        garment_des: productDescription,              // 📄 Descripción de la prenda
+        category: productCategory,                    // 🏷️ Solo upper_body, lower_body, dresses
+        crop: true,                                   // ✂️ Activamos crop por defecto
+        seed: 42,                                     // 🌱 Fijamos la semilla en 42 (consistencia en resultados)
+        steps: 30,                                    // 🔄 Número de pasos de inferencia
+        force_dc: false,                              // ❌ No activamos DressCode (excepto si category = dresses)
+        mask_only: false                              // ❌ No queremos solo la máscara, queremos la imagen final
       },
     });
 
@@ -56,11 +69,11 @@ export async function POST(req: NextRequest) {
 
     console.log("✅ Respuesta final de Replicate:", response);
 
-    // ✅ Verificamos si la respuesta contiene la propiedad `output`
+    // ✅ Verificamos si la respuesta contiene la propiedad output
     let finalImage: string | null = null;
 
     if (typeof response.output === "string") {
-      finalImage = response.output; // ✅ Caso cuando `output` es una string (URL de la imagen)
+      finalImage = response.output; // ✅ Caso cuando output es una string (URL de la imagen)
     } else if (Array.isArray(response.output) && response.output.length > 0) {
       finalImage = response.output[response.output.length - 1]; // ✅ Caso cuando es un array
     }
