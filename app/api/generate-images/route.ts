@@ -11,12 +11,13 @@ export async function POST(req: NextRequest) {
   try {
     console.log("📌 API recibió una solicitud");
 
-    const { imageBase64, prompt } = await req.json();
-    console.log("✅ Recibido en la API:", { imageBase64Length: imageBase64?.length, prompt });
+    // ✅ Recibimos ambas imágenes y la descripción de la prenda
+    const { userImage, productImage, productDescription } = await req.json();
+    console.log("✅ Recibido en la API:", { userImageLength: userImage?.length, productImage, productDescription });
 
-    if (!imageBase64 || !prompt) {
-      console.error("❌ Faltan datos: Image o Prompt", { imageBase64Length: imageBase64?.length, prompt });
-      return NextResponse.json({ error: "Image and prompt are required" }, { status: 400 });
+    if (!userImage || !productImage || !productDescription) {
+      console.error("❌ Faltan datos: userImage, productImage o productDescription", { userImageLength: userImage?.length, productImage, productDescription });
+      return NextResponse.json({ error: "User image, product image, and product description are required" }, { status: 400 });
     }
 
     console.log("🔄 Enviando solicitud a Replicate...");
@@ -24,12 +25,13 @@ export async function POST(req: NextRequest) {
       auth: process.env.REPLICATE_API_TOKEN!,
     });
 
-    // 🔥 Manteniendo el mismo flujo, pero con el nuevo modelo
+    // 🔥 Enviar las dos imágenes al nuevo modelo
     const prediction = await replicate.predictions.create({
-      version: "06d6fae3b75ab68a28cd2900afa6033166910dd09fd9751047043a5bbb4c184b", // Nuevo modelo
+      version: "c871b9b046067b0804469ecbae55fd8cd945e0a194864bf2361b3d021d3ff4", // Nuevo modelo dm-vton
       input: {
-        prompt,
-        image: `data:image/png;base64,${imageBase64}`,
+        human_img: `data:image/png;base64,${userImage}`, // 📸 Imagen del usuario en Base64
+        garment_img: productImage,                       // 👕 Imagen del producto (URL)
+        garment_des: productDescription                  // 📄 Descripción de la prenda
       },
     });
 
