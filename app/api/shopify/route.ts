@@ -15,7 +15,7 @@ export async function GET() {
       );
     }
 
-    console.log(`🌐 [Shopify API] Conectando a: https://${shopifyStore}/admin/api/2024-01/products.json`);
+    console.log(`🌐 [Shopify API] Conectando a: https://${shopifyStore}/admin/api/2025-01/products.json`);
 
     const response = await fetch(
       `https://${shopifyStore}/admin/api/2025-01/products.json`,
