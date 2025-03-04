@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { RequestContext } from "next/dist/server/web/spec-extension/request";
 
-export async function GET(req: NextRequest, context: RequestContext) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { filename: string } }
+) {
   try {
-    const { filename } = context.params as { filename?: string };
+    const filename = params.filename;
 
     if (!filename) {
       console.error("❌ [Serve Image] No se proporcionó un nombre de archivo válido");
@@ -27,7 +29,7 @@ export async function GET(req: NextRequest, context: RequestContext) {
     return new NextResponse(fileBuffer, {
       status: 200,
       headers: {
-        "Content-Type": "image/png", // Ajustar según el tipo de imagen
+        "Content-Type": "image/png", // Cambiar según el tipo de imagen
       },
     });
   } catch (error) {
