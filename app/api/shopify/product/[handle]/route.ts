@@ -8,10 +8,8 @@ const CATEGORY_MAP: Record<string, string[]> = {
     "upper_body": ["camisa", "polera", "chaqueta", "top", "suéter", "sweater", "t-shirt", "shirt", "jacket",
         "jersey", "hoodie", "parka", "camiseta", "anorak", "cazadora", "pullover", "chaquetón",
         "abrigo", "blazer", "poleron"],
-    
     "lower_body": ["pantalón", "jeans", "shorts", "falda", "jogger", "cargo", "leggings", "pants", "skirt",
         "bermuda", "bóxer", "calza", "culotte", "chandal", "trousers"],
-    
     "dresses": ["vestido", "enterizo", "jumpsuit", "overall", "dress", "mono", "pichi", "maxi vestido"]
 };
 
@@ -51,7 +49,8 @@ export async function GET(req: NextRequest) {
 
         const product = data.products[0];
 
-        const category = Object.entries(CATEGORY_MAP).find(([_, keywords]) =>
+        // ✅ Corregido: Usar un nombre válido en lugar de "_"
+        const category = Object.entries(CATEGORY_MAP).find(([categoryKey, keywords]) =>
             keywords.some(keyword => (product.title + " " + product.product_type).toLowerCase().includes(keyword))
         )?.[0] || null;
 
