@@ -8,30 +8,18 @@ const CATEGORY_MAP: Record<string, string[]> = {
     "upper_body": ["camisa", "polera", "chaqueta", "top", "suéter", "sweater", "t-shirt", "shirt", "jacket",
         "jersey", "hoodie", "parka", "camiseta", "anorak", "cazadora", "pullover", "chaquetón",
         "abrigo", "blazer", "poleron"],
+    
     "lower_body": ["pantalón", "jeans", "shorts", "falda", "jogger", "cargo", "leggings", "pants", "skirt",
         "bermuda", "bóxer", "calza", "culotte", "chandal", "trousers"],
+    
     "dresses": ["vestido", "enterizo", "jumpsuit", "overall", "dress", "mono", "pichi", "maxi vestido"]
 };
 
-function classifyClothing(title: string, productType: string, tags: string[]): string | null {
-    console.log("📢 [ClassifyClothing] Procesando:", title, "|", productType, "|", tags);
-
-    const lowerText = (title + " " + productType + " " + tags.join(" ")).toLowerCase();
-
-    for (const [category, keywords] of Object.entries(CATEGORY_MAP)) {
-        if (keywords.some(keyword => lowerText.includes(keyword))) {
-            console.log(`✅ Clasificado como: ${category}`);
-            return category;
-        }
-    }
-
-    console.log("❌ No se pudo clasificar el producto.");
-    return null;
-}
-
-export async function GET(req: NextRequest, context: { params: { handle: string } }) {
+// ✅ Extraer `handle` desde `req.nextUrl.pathname`
+export async function GET(req: NextRequest) {
     try {
-        const { handle } = context.params;  // ✅ Ahora la extracción es válida en Next.js 15
+        const urlParts = req.nextUrl.pathname.split("/");
+        const handle = urlParts[urlParts.length - 1]; // Última parte de la URL es el handle del producto
 
         console.log(`📢 [Shopify API] Buscando producto: ${handle}`);
 
@@ -62,7 +50,10 @@ export async function GET(req: NextRequest, context: { params: { handle: string 
         }
 
         const product = data.products[0];
-        const category = classifyClothing(product.title, product.product_type, product.tags.split(", "));
+
+        const category = Object.entries(CATEGORY_MAP).find(([_, keywords]) =>
+            keywords.some(keyword => (product.title + " " + product.product_type).toLowerCase().includes(keyword))
+        )?.[0] || null;
 
         const productInfo = {
             id: product.id,
