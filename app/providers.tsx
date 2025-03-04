@@ -1,6 +1,6 @@
 "use client";
 
-import { AppProvider } from "@shopify/app-bridge-react";
+import { AppProvider as AppBridgeProvider } from "@shopify/app-bridge-react";
 import { AppProvider as PolarisProvider } from "@shopify/polaris";
 import "@shopify/polaris/build/esm/styles.css";
 
@@ -9,7 +9,9 @@ export default function Providers({ children }) {
 
     return (
         <AppBridgeProvider config={{ apiKey: process.env.NEXT_PUBLIC_SHOPIFY_API_KEY, host }}>
-            <PolarisProvider>{children}</PolarisProvider>
+            <PolarisProvider>
+                {children}
+            </PolarisProvider>
         </AppBridgeProvider>
     );
 }
