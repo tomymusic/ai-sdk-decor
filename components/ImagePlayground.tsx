@@ -27,8 +27,8 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     setShowProviders(true);
   };
 
-  const handleImageUpload = (imageUrl: string | null) => {
-    setImageUrl(imageUrl);
+  const handleImageUpload = (uploadedUrl: string | null) => {
+    setImageUrl(uploadedUrl);
   };
 
   const handleSubmit = async (prompt: string) => {
