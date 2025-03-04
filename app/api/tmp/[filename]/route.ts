@@ -4,18 +4,15 @@ import path from "path";
 
 export async function GET(
   req: NextRequest,
-  context: { params: Record<string, string> } // 🔥 SOLUCIÓN AQUÍ
+  { params }: { params?: { filename?: string } } // ✅ Ahora admite undefined correctamente
 ) {
   try {
-    const filename = context.params.filename;
-
-    if (!filename) {
+    if (!params?.filename) {
       console.error("❌ [Serve Image] No se proporcionó un nombre de archivo válido");
       return new NextResponse("Filename is required", { status: 400 });
     }
 
-    const tempDir = "/tmp"; // Carpeta temporal en Vercel
-    const filePath = path.join(tempDir, filename);
+    const filePath = path.join("/tmp", params.filename);
 
     console.log(`📢 [Serve Image] Buscando archivo: ${filePath}`);
 
