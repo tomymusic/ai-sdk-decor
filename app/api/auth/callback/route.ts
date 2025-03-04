@@ -3,7 +3,6 @@ import crypto from "crypto";
 
 const SHOPIFY_API_KEY = process.env.SHOPIFY_API_KEY!;
 const SHOPIFY_API_SECRET = process.env.SHOPIFY_API_SECRET!;
-const SHOPIFY_APP_URL = process.env.SHOPIFY_APP_URL!;
 
 export async function GET(req: NextRequest) {
     const url = new URL(req.url);
