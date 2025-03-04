@@ -1,4 +1,6 @@
-export default async function handler(req, res) {
+import type { NextApiRequest, NextApiResponse } from "next";
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const response = await fetch(
       `https://${process.env.SHOPIFY_STORE}/admin/api/2025-01/products.json`,
