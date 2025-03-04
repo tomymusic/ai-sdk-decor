@@ -4,15 +4,17 @@ import path from "path";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { filename: string } } // ✅ Forma correcta de tipar `params`
+  context: { params?: Record<string, string> } // 🔥 FIX: Cambio en la tipificación
 ) {
   try {
-    if (!params.filename) {
+    const filename = context.params?.filename; // 🔥 FIX: Verificamos si `params` existe
+
+    if (!filename) {
       console.error("❌ [Serve Image] No se proporcionó un nombre de archivo válido");
       return new NextResponse("Filename is required", { status: 400 });
     }
 
-    const filePath = path.join("/tmp", params.filename);
+    const filePath = path.join("/tmp", filename);
 
     console.log(`📢 [Serve Image] Buscando archivo: ${filePath}`);
 
