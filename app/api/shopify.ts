@@ -20,12 +20,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     );
 
     if (!response.ok) {
-      throw new Error("Error obteniendo productos de Shopify");
+      throw new Error(`Error obteniendo productos de Shopify: ${response.statusText}`);
     }
 
     const data = await response.json();
     res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+    res.status(500).json({ error: errorMessage });
   }
 }
