@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, readFile } from "fs/promises";
-import fs from "fs";
+import { writeFile } from "fs/promises";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 
-// 📌 Ruta para manejar tanto la subida como la entrega de imágenes
 export async function POST(req: NextRequest) {
   try {
     console.log("📌 Recibiendo imagen para generar URL temporal...");
@@ -25,9 +23,9 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer());
     await writeFile(filePath, buffer);
 
-    // Generar la URL temporal usando el host actual
+    // Generar la URL pública con el nuevo endpoint
     const host = `https://${req.headers.get("host")}`;
-    const imageUrl = `${host}/api/upload/${fileName}`;
+    const imageUrl = `${host}/api/tmp/${fileName}`;
 
     console.log("✅ Imagen guardada temporalmente:", imageUrl);
 
@@ -35,43 +33,5 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("❌ Error al procesar la imagen:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-}
-
-// 📌 Ruta dinámica para servir imágenes guardadas temporalmente
-export async function GET(
-  req: NextRequest, 
-  context: { params: { filename: string } } // 🔥 Ajustamos la estructura correcta
-) {
-  try {
-    const filename = context.params.filename;
-    
-    if (!filename) {
-      console.error("❌ [Serve Image] No se proporcionó un nombre de archivo válido");
-      return new NextResponse("Filename is required", { status: 400 });
-    }
-
-    const tempDir = "/tmp"; // Carpeta temporal en Vercel
-    const filePath = path.join(tempDir, filename);
-
-    console.log(`📢 [Serve Image] Buscando archivo: ${filePath}`);
-
-    // Verificar si el archivo existe
-    if (!fs.existsSync(filePath)) {
-      console.error("❌ [Serve Image] Archivo no encontrado:", filePath);
-      return new NextResponse("File not found", { status: 404 });
-    }
-
-    // Leer la imagen y devolverla con el header correcto
-    const fileBuffer = await readFile(filePath);
-    return new NextResponse(fileBuffer, {
-      status: 200,
-      headers: {
-        "Content-Type": "image/png", // Cambiar según el tipo de imagen
-      },
-    });
-  } catch (error) {
-    console.error("❌ [Serve Image] Error al servir la imagen:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
