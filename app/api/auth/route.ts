@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const SHOPIFY_API_KEY = process.env.SHOPIFY_API_KEY!;
-const SHOPIFY_API_SECRET = process.env.SHOPIFY_API_SECRET!;
 const SHOPIFY_SCOPES = process.env.SHOPIFY_SCOPES!;
 const SHOPIFY_APP_URL = process.env.SHOPIFY_APP_URL!;
 
