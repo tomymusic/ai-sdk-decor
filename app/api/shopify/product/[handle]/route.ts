@@ -4,23 +4,15 @@ import { NextRequest, NextResponse } from "next/server";
 const SHOPIFY_STORE = process.env.SHOPIFY_STORE!;
 const SHOPIFY_API_KEY = process.env.SHOPIFY_API_KEY!;
 
-// 📌 Diccionario mejorado con TODAS las prendas relevantes
 const CATEGORY_MAP: Record<string, string[]> = {
-    "upper_body": [
-        "camisa", "polera", "chaqueta", "top", "suéter", "sweater", "t-shirt", "shirt", "jacket",
+    "upper_body": ["camisa", "polera", "chaqueta", "top", "suéter", "sweater", "t-shirt", "shirt", "jacket",
         "jersey", "hoodie", "parka", "camiseta", "anorak", "cazadora", "pullover", "chaquetón",
-        "abrigo", "blazer", "poleron"
-    ],
-    "lower_body": [
-        "pantalón", "jeans", "shorts", "falda", "jogger", "cargo", "leggings", "pants", "skirt",
-        "bermuda", "bóxer", "calza", "culotte", "chandal", "trousers"
-    ],
-    "dresses": [
-        "vestido", "enterizo", "jumpsuit", "overall", "dress", "mono", "pichi", "maxi vestido"
-    ]
+        "abrigo", "blazer", "poleron"],
+    "lower_body": ["pantalón", "jeans", "shorts", "falda", "jogger", "cargo", "leggings", "pants", "skirt",
+        "bermuda", "bóxer", "calza", "culotte", "chandal", "trousers"],
+    "dresses": ["vestido", "enterizo", "jumpsuit", "overall", "dress", "mono", "pichi", "maxi vestido"]
 };
 
-// 📌 Función para clasificar la ropa con la lista actualizada
 function classifyClothing(title: string, productType: string, tags: string[]): string | null {
     console.log("📢 [ClassifyClothing] Procesando:", title, "|", productType, "|", tags);
 
@@ -71,13 +63,14 @@ export async function GET(req: NextRequest, { params }: { params: { handle: stri
         const product = data.products[0];
         const category = classifyClothing(product.title, product.product_type, product.tags.split(", "));
 
+        // ✅ Corregido: Tipado correcto para evitar errores de TypeScript
         const productInfo = {
             id: product.id,
             title: product.title,
             handle: product.handle,
             product_type: product.product_type,
             category: category,
-            images: product.images.map((img: any) => img.src),
+            images: product.images.map((img: { src: string }) => img.src), // 💡 Ya no usa `any`
         };
 
         console.log(`✅ [Shopify API] Producto encontrado: ${product.title} (${category})`);
