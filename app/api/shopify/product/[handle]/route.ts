@@ -29,9 +29,10 @@ function classifyClothing(title: string, productType: string, tags: string[]): s
     return null;
 }
 
-export async function GET(req: NextRequest, { params }: { params: { handle: string } }) {
+export async function GET(req: NextRequest, context: { params: { handle: string } }) {
     try {
-        const { handle } = params;
+        const { handle } = context.params;  // ✅ Ahora la extracción es válida en Next.js 15
+
         console.log(`📢 [Shopify API] Buscando producto: ${handle}`);
 
         const response = await fetch(
@@ -63,14 +64,13 @@ export async function GET(req: NextRequest, { params }: { params: { handle: stri
         const product = data.products[0];
         const category = classifyClothing(product.title, product.product_type, product.tags.split(", "));
 
-        // ✅ Corregido: Tipado correcto para evitar errores de TypeScript
         const productInfo = {
             id: product.id,
             title: product.title,
             handle: product.handle,
             product_type: product.product_type,
             category: category,
-            images: product.images.map((img: { src: string }) => img.src), // 💡 Ya no usa `any`
+            images: product.images.map((img: { src: string }) => img.src),
         };
 
         console.log(`✅ [Shopify API] Producto encontrado: ${product.title} (${category})`);
