@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 
 interface ImageUploaderProps {
-  onImageUpload: (base64Image: string | null) => void; // Ahora espera Base64 en lugar de File
+  onImageUpload: (imageUrl: string | null) => void; // Ahora espera una URL en lugar de Base64
 }
 
 export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
@@ -14,22 +14,26 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Convertir a Base64 y eliminar el prefijo "data:image/png;base64,"
-    const base64 = await convertFileToBase64(file);
-    const base64WithoutPrefix = base64.split(",")[1]; // Eliminamos la parte "data:image/png;base64,"
+    // Subir imagen al backend en lugar de convertirla a Base64
+    const formData = new FormData();
+    formData.append("file", file);
 
-    onImageUpload(base64WithoutPrefix);
-    setPreview(URL.createObjectURL(file));
-  };
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-  // Función para convertir un archivo a Base64
-  const convertFileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
+      if (!response.ok) {
+        throw new Error("Error uploading image");
+      }
+
+      const data = await response.json();
+      onImageUpload(data.imageUrl); // Enviamos la URL al parent
+      setPreview(data.imageUrl);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
   };
 
   return (
