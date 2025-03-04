@@ -1,4 +1,3 @@
-// app/api/shopify/product/[handle]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 const SHOPIFY_STORE = process.env.SHOPIFY_STORE!;
@@ -13,11 +12,10 @@ const CATEGORY_MAP: Record<string, string[]> = {
     "dresses": ["vestido", "enterizo", "jumpsuit", "overall", "dress", "mono", "pichi", "maxi vestido"]
 };
 
-// ✅ Extraer `handle` desde `req.nextUrl.pathname`
 export async function GET(req: NextRequest) {
     try {
         const urlParts = req.nextUrl.pathname.split("/");
-        const handle = urlParts[urlParts.length - 1]; // Última parte de la URL es el handle del producto
+        const handle = urlParts[urlParts.length - 1];
 
         console.log(`📢 [Shopify API] Buscando producto: ${handle}`);
 
@@ -49,8 +47,7 @@ export async function GET(req: NextRequest) {
 
         const product = data.products[0];
 
-        // ✅ Corregido: Usar un nombre válido en lugar de "_"
-        const category = Object.entries(CATEGORY_MAP).find(([categoryKey, keywords]) =>
+        const category = Object.entries(CATEGORY_MAP).find(([, keywords]) =>
             keywords.some(keyword => (product.title + " " + product.product_type).toLowerCase().includes(keyword))
         )?.[0] || null;
 
