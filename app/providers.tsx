@@ -12,7 +12,7 @@ export default function Providers({ children }: { children: ReactNode }) {
 
     return (
         <AppBridgeProvider config={{ apiKey, host }}>
-            <PolarisProvider>
+            <PolarisProvider i18n={{ locale: "en" }}>
                 {children}
             </PolarisProvider>
         </AppBridgeProvider>
