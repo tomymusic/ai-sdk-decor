@@ -1,9 +1,19 @@
-<div id="ai-sdk-decor-app"></div>
+<div id="ai-sdk-decor-app" data-shop="{{ shop.permanent_domain }}"></div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var script = document.createElement("script");
         script.src = "https://ai-sdk-decor.vercel.app/embed.js";
         script.async = true;
         document.body.appendChild(script);
+        
+        script.onload = function () {
+            if (window.AiSdkDecor) {
+                window.AiSdkDecor.init({
+                    shop: document.getElementById("ai-sdk-decor-app").getAttribute("data-shop"),
+                    productId: "{{ product.id }}"
+                });
+            }
+        };
     });
 </script>
