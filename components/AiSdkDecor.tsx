@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 export default function AiSdkDecor({ productId, imageUrl }: { productId: string; imageUrl: string }) {
     const [userImage, setUserImage] = useState<File | null>(null);
@@ -32,12 +33,25 @@ export default function AiSdkDecor({ productId, imageUrl }: { productId: string;
             <h2>AI SDK Decor</h2>
             <p>Producto ID: {productId}</p>
             <p>Imagen del Producto:</p>
-            <img src={imageUrl} alt="Producto" width="200" />
+            <Image 
+                src={imageUrl} 
+                alt="Producto" 
+                width={200} 
+                height={200} 
+                priority 
+            />
 
             <input type="file" onChange={handleFileUpload} />
             <button onClick={handleApplyAI}>Aplicar IA</button>
 
-            {aiResult && <img src={aiResult} alt="AI Result" />}
+            {aiResult && (
+                <Image 
+                    src={aiResult} 
+                    alt="AI Result" 
+                    width={200} 
+                    height={200} 
+                />
+            )}
         </div>
     );
 }
