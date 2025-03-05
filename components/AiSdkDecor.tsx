@@ -38,7 +38,7 @@ export default function AiSdkDecor({ productId, imageUrl }: { productId: string;
                 alt="Producto" 
                 width={200} 
                 height={200} 
-                priority 
+                priority
             />
 
             <input type="file" onChange={handleFileUpload} />
