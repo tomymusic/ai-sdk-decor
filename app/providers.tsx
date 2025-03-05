@@ -1,6 +1,6 @@
 "use client";
 
-import { AppProvider as AppBridgeProvider } from "@shopify/app-bridge-react";
+import { Provider as AppBridgeProvider } from "@shopify/app-bridge-react";
 import { AppProvider as PolarisProvider } from "@shopify/polaris";
 import "@shopify/polaris/build/esm/styles.css";
 
