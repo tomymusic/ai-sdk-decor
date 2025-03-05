@@ -11,11 +11,12 @@ export async function GET(req: NextRequest) {
     const shop = url.searchParams.get("shop");
     const code = url.searchParams.get("code");
     const hmac = url.searchParams.get("hmac");
+    const host = url.searchParams.get("host");
 
-    console.log("🔍 Query Params:", { shop, code, hmac });
+    console.log("🔍 Query Params:", { shop, code, hmac, host });
 
-    if (!shop || !code || !hmac) {
-        console.error("❌ Missing parameters", { shop, code, hmac });
+    if (!shop || !code || !hmac || !host) {
+        console.error("❌ Missing parameters", { shop, code, hmac, host });
         return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
     }
 
@@ -58,9 +59,8 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: "Failed to get access token" }, { status: 400 });
     }
 
-    const accessToken = data.access_token;
-
     console.log("✅ Authentication successful! Access Token received.");
 
-    return NextResponse.json({ success: true, access_token: accessToken });
+    // Redirigir al usuario al panel de Shopify con la app abierta
+    return NextResponse.redirect(`https://admin.shopify.com/store/${shop}/apps?host=${host}`);
 }
