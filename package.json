@@ -35,7 +35,10 @@
     "uuid": "^11.1.0",
     "@shopify/app-bridge": "^3.7.10",
     "@shopify/app-bridge-react": "^3.7.10",
-    "@shopify/polaris": "^13.9.3"
+    "@shopify/polaris": "^13.9.3",
+    "@shopify/ui-extensions-react": "^1.1.0",
+    "shopify-cli": "^3.50.0",
+    "dotenv": "^16.4.7"
   },
   "devDependencies": {
     "@types/formidable": "^3.4.5",
