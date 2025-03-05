@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function AiSdkDecor({ productId, imageUrl }: { productId: string; imageUrl: string }) {
     const [userImage, setUserImage] = useState<File | null>(null);
