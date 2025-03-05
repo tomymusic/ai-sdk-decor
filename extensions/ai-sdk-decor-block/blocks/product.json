@@ -1,0 +1,9 @@
+{
+  "name": "AI SDK Decor",
+  "target": "section",
+  "type": "product",
+  "settings": [],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
