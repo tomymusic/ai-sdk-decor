@@ -1,0 +1,5 @@
+name = "AI SDK Decor Block"
+type = "theme"
+handle = "ai-sdk-decor-block"
+target = "theme"
+version = "1.0.0"
