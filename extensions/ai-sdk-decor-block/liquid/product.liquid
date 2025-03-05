@@ -1,6 +1,7 @@
-<div id="ai-sdk-decor-app" data-shop="{{ shop.permanent_domain }}"></div>
+{% if block.settings.enable_generation %}
+  <div id="ai-sdk-decor-app" data-shop="{{ shop.permanent_domain }}" data-product-id="{{ product.id }}"></div>
 
-<script>
+  <script>
     document.addEventListener("DOMContentLoaded", function () {
         var script = document.createElement("script");
         script.src = "https://ai-sdk-decor.vercel.app/embed.js";
@@ -11,9 +12,10 @@
             if (window.AiSdkDecor) {
                 window.AiSdkDecor.init({
                     shop: document.getElementById("ai-sdk-decor-app").getAttribute("data-shop"),
-                    productId: "{{ product.id }}"
+                    productId: document.getElementById("ai-sdk-decor-app").getAttribute("data-product-id")
                 });
             }
         };
     });
-</script>
+  </script>
+{% endif %}
