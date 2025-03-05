@@ -1,0 +1,6 @@
+scopes = "write_products,read_products"
+
+[[extensions]]
+type = "theme_app_extension"
+name = "AI SDK Decor Block"
+handle = "ai-sdk-decor-block"
