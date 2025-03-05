@@ -1,9 +1,18 @@
 {
   "name": "AI SDK Decor",
   "target": "section",
-  "type": "product",
-  "settings": [],
-  "enabled_on": {
-    "templates": ["product"]
-  }
+  "type": "app",
+  "settings": [
+    {
+      "type": "text",
+      "id": "api_key",
+      "label": "API Key"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_generation",
+      "label": "Enable AI Image Generation",
+      "default": true
+    }
+  ]
 }
