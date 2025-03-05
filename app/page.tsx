@@ -17,9 +17,11 @@ export default function Page() {
 
       if (host) {
         router.replace(`/?host=${host}`);
+      } else {
+        console.error("⚠️ No se encontró 'host' en la URL, evitando redirección inválida.");
       }
     }
-  }, [router]); // ✅ Agregamos `router` a las dependencias
+  }, [router]);
 
   return <ImagePlayground suggestions={getRandomSuggestions()} />;
 }
