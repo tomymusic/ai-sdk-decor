@@ -1,7 +1,7 @@
 {
   "name": "AI SDK Decor",
   "target": "section",
-  "type": "app",
+  "type": "app_block",
   "settings": [
     {
       "type": "text",
