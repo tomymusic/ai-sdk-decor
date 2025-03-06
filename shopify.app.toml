@@ -1,6 +1,19 @@
-scopes = "write_products,read_products"
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-[[extensions]]
-type = "theme_app_extension"
-name = "AI SDK Decor Block"
-handle = "ai-sdk-decor-block"
+client_id = "059d4b605c60bf1abeca65c42f454258"
+application_url = "https://ai-sdk-decor.vercel.app/"
+embedded = true
+name = "AI SDK DECOR"
+handle = "ai-sdk-decor"
+
+[webhooks]
+api_version = "2025-01"
+
+[auth]
+redirect_urls = [ "https://ai-sdk-decor.vercel.app/api/auth/callback" ]
+
+[pos]
+embedded = false
+
+[build]
+include_config_on_deploy = true

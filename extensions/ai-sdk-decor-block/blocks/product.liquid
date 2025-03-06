@@ -1,0 +1,36 @@
+{% schema %}
+{
+  "name": "AI SDK Decor Block",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título del bloque",
+      "default": "Decoración AI"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Color de fondo",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "opacity",
+      "label": "Opacidad",
+      "min": 0,
+      "max": 100,
+      "default": 100
+    }
+  ]
+}
+{% endschema %}
+
+<div style="background-color: {{ block.settings.background_color }}; opacity: {{ block.settings.opacity | divided_by: 100.0 }};">
+  <h2>{{ block.settings.title }}</h2>
+  <div id="ai-sdk-decor-app" data-product-id="{{ product.id }}"></div>
+</div>
+
+<!-- Cargar el script que inyecta React en Shopify -->
+<script src="{{ 'shopify-block.js' | asset_url }}" defer></script>
