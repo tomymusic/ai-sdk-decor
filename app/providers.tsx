@@ -7,7 +7,7 @@ import "@shopify/polaris/build/esm/styles.css";
 
 export default function Providers({ children }: { children: ReactNode }) {
     const [host, setHost] = useState<string>("");
-    const [apiKey, setApiKey] = useState<string>(process.env.SHOPIFY_API_KEY || "FALLBACK_KEY");
+    const apiKey = process.env.SHOPIFY_API_KEY || "FALLBACK_KEY";
 
     useEffect(() => {
         if (typeof window !== "undefined") {
