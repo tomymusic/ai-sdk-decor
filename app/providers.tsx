@@ -12,10 +12,17 @@ export default function Providers({ children }: { children: ReactNode }) {
     useEffect(() => {
         if (typeof window !== "undefined") {
             const searchParams = new URLSearchParams(window.location.search);
-            const shopifyHost = searchParams.get("host");
+            let shopifyHost = searchParams.get("host");
 
             if (shopifyHost) {
-                setHost(decodeURIComponent(shopifyHost)); // Decodificamos para evitar problemas con valores en base64
+                try {
+                    const decodedHost = atob(shopifyHost); // Decodifica base64
+                    setHost(decodedHost);
+                    console.log("✅ Host decodificado:", decodedHost);
+                } catch (error) {
+                    console.error("❌ Error al decodificar `host`:", error);
+                    setHost(shopifyHost); // Usa el valor original si falla la decodificación
+                }
             } else {
                 console.error("❌ Error: `host` no encontrado en la URL.");
             }
