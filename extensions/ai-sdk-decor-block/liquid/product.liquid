@@ -1,21 +1,26 @@
-{% if block.settings.enable_generation %}
-  <div id="ai-sdk-decor-app" data-shop="{{ shop.permanent_domain }}" data-product-id="{{ product.id }}"></div>
+{% schema %}
+{
+  "name": "AI SDK Decor",
+  "target": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_generation",
+      "label": "Enable AI Image Generation",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
 
+{% if block.settings.enable_generation %}
+  <div id="ai-sdk-decor-app"></div>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-        var script = document.createElement("script");
-        script.src = "https://ai-sdk-decor.vercel.app/embed.js";
-        script.async = true;
-        document.body.appendChild(script);
-        
-        script.onload = function () {
-            if (window.AiSdkDecor) {
-                window.AiSdkDecor.init({
-                    shop: document.getElementById("ai-sdk-decor-app").getAttribute("data-shop"),
-                    productId: document.getElementById("ai-sdk-decor-app").getAttribute("data-product-id")
-                });
-            }
-        };
+      var script = document.createElement("script");
+      script.src = "https://ai-sdk-decor.vercel.app/embed.js";
+      script.async = true;
+      document.body.appendChild(script);
     });
   </script>
 {% endif %}
