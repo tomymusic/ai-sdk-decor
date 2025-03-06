@@ -12,21 +12,25 @@ export default function Providers({ children }: { children: ReactNode }) {
     useEffect(() => {
         if (typeof window !== "undefined") {
             const searchParams = new URLSearchParams(window.location.search);
-            const shopifyHost = searchParams.get("host") || process.env.SHOPIFY_HOST || null;
+            const shopifyHost = searchParams.get("host");
 
             if (shopifyHost) {
-                setHost(shopifyHost);
+                setHost(decodeURIComponent(shopifyHost)); // Decodificamos para evitar problemas con valores en base64
             } else {
-                console.error("❌ Error: `host` no encontrado en la URL ni en las variables de entorno.");
+                console.error("❌ Error: `host` no encontrado en la URL.");
             }
         }
     }, []);
 
     console.log("✅ Shopify API Key:", apiKey);
-    console.log("✅ Shopify Host:", host);
+    console.log("✅ Shopify Host:", host || "❌ No encontrado");
 
     if (!host) {
-        return <div style={{ padding: "20px", color: "red", fontWeight: "bold" }}>❌ Error: No se puede cargar la aplicación sin `host`.</div>;
+        return (
+            <div style={{ padding: "20px", color: "red", fontWeight: "bold", textAlign: "center" }}>
+                ❌ Error: No se puede cargar la aplicación sin `host`.
+            </div>
+        );
     }
 
     return (
