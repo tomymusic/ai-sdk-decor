@@ -7,10 +7,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   console.log("Cargando AI SDK Decor para producto...");
 
-  // Inyectar el iframe que mostrará el bloque de Next.js
+  // Inyectar solo el componente sin la página completa
   setTimeout(() => {
     const iframe = document.createElement("iframe");
-    iframe.src = "/shopify-block/";
+    iframe.src = "/shopify-block/?embed=true"; // Agregamos un query param para manejar el layout
     iframe.style.width = "100%";
     iframe.style.height = "500px";
     iframe.style.border = "none";

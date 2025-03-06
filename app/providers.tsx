@@ -1,17 +1,33 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Provider as AppBridgeProvider } from "@shopify/app-bridge-react";
 import { AppProvider as PolarisProvider } from "@shopify/polaris";
 import "@shopify/polaris/build/esm/styles.css";
 
 export default function Providers({ children }: { children: ReactNode }) {
-    const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
-    const host: string = searchParams?.get("host") ?? "default-host"; 
-    const apiKey: string = process.env.SHOPIFY_API_KEY || "FALLBACK_KEY"; 
+    const [host, setHost] = useState<string>("");
+    const [apiKey, setApiKey] = useState<string>(process.env.SHOPIFY_API_KEY || "FALLBACK_KEY");
 
-    console.log("Shopify API Key:", apiKey);
-    console.log("Shopify Host:", host);
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const searchParams = new URLSearchParams(window.location.search);
+            const shopifyHost = searchParams.get("host");
+
+            if (shopifyHost) {
+                setHost(shopifyHost);
+            } else {
+                console.warn("⚠️ Advertencia: No se encontró `host` en la URL.");
+            }
+        }
+    }, []);
+
+    console.log("✅ Shopify API Key:", apiKey);
+    console.log("✅ Shopify Host:", host);
+
+    if (!host || !apiKey) {
+        return <div>⚠️ Error: No se puede cargar la aplicación sin `host` y `API Key`.</div>;
+    }
 
     return (
         <AppBridgeProvider config={{ apiKey, host }}>
