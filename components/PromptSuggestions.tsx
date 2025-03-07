@@ -1,36 +1,43 @@
-export interface Suggestion {
-  text: string;
-  prompt: string;
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Lightbulb } from "lucide-react";
+import { Suggestion } from "@/lib/suggestions";
+
+interface PromptSuggestionsProps {
+  suggestions: Suggestion[];
+  onSelect: (prompt: string) => void;
+  disabled?: boolean;
 }
 
-const clothingTypes: { text: string; prompt: string }[] = [
-  { text: "T-Shirt", prompt: "T-Shirt" },
-  { text: "Jacket", prompt: "Jacket" },
-  { text: "Sweater", prompt: "Sweater" },
-  { text: "Blouse", prompt: "Blouse" },
-  { text: "Hoodie", prompt: "Hoodie" },
-  { text: "Jeans", prompt: "Jeans" },
-  { text: "Shorts", prompt: "Shorts" },
-  { text: "Skirt", prompt: "Skirt" },
-  { text: "Trousers", prompt: "Trousers" },
-  { text: "Casual Dress", prompt: "Casual Dress" },
-  { text: "Evening Dress", prompt: "Evening Dress" },
-  { text: "Summer Dress", prompt: "Summer Dress" },
-];
-
-function shuffle<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
-
-export function getRandomSuggestions(count: number = 5): Suggestion[] {
-  const shuffledClothing = shuffle(clothingTypes);
-  return shuffledClothing.slice(0, count).map((item) => ({
-    text: item.text,
-    prompt: item.prompt,
-  }));
+export function PromptSuggestions({
+  suggestions,
+  onSelect,
+  disabled = false,
+}: PromptSuggestionsProps) {
+  return (
+    <div className="relative flex-grow overflow-hidden">
+      <ScrollArea className="w-full whitespace-nowrap rounded-md">
+        <div className="flex items-center gap-2">
+          <div className="flex gap-2 py-1">
+            {suggestions.map((suggestion) => (
+              <Button
+                key={suggestion.text}
+                variant="secondary"
+                size="sm"
+                className="h-8 shrink-0 gap-1.5"
+                disabled={disabled}
+                onClick={() => onSelect(suggestion.prompt)}
+              >
+                <Lightbulb className="h-3.5 w-3.5 text-muted-foreground" />
+                {suggestion.text}
+              </Button>
+            ))}
+          </div>
+        </div>
+        <ScrollBar orientation="horizontal" className="h-2.5" />
+      </ScrollArea>
+    </div>
+  );
 }
