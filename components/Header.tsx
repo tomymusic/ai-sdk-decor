@@ -33,9 +33,9 @@ export const Header = () => {
           <h1 className="text-xl flex sm:text-2xl sm:font-bold antialiased font-semibold">
             <div className="flex items-center mr-2 cursor-default">
               <SparklesIcon />
-              AI SDK
+              Try On
             </div>
-            Decor
+            AI
           </h1>
         </div>
       </div>
