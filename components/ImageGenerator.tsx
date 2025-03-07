@@ -8,14 +8,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { ImageDisplay } from "./ImageDisplay";
 import { GeneratedImage, ImageError, ProviderTiming } from "@/lib/image-types";
-import { PROVIDER_ORDER, ProviderKey } from "@/lib/provider-config";
 
 interface ImageGeneratorProps {
   images: GeneratedImage[];
   errors: ImageError[];
-  failedProviders: ProviderKey[];
-  timings: Record<ProviderKey, ProviderTiming>;
-  enabledProviders: Record<ProviderKey, boolean>;
+  failedProviders: string[]; // Se cambia ProviderKey[] por string[]
+  timings: Record<string, ProviderTiming>; // Se cambia ProviderKey por string
+  enabledProviders: Record<string, boolean>; // Se cambia ProviderKey por string
   toggleView: () => void;
 }
 
@@ -77,18 +76,18 @@ export function ImageGenerator({
 
       {/* Desktop layout: Grid */}
       <div className="hidden sm:grid sm:grid-cols-2 2xl:grid-cols-4 gap-6">
-        {PROVIDER_ORDER.map((provider) => {
-          const imageItem = images.find((img) => img.provider === provider);
-          const imageData = imageItem?.image;
-          const timing = timings[provider];
+        {images.map((imageItem) => {
+          const imageData = imageItem.image;
+          const timing = timings[imageItem.provider];
+
           return (
             <ImageDisplay
-              key={provider}
-              provider={provider}
+              key={imageItem.provider}
+              provider={imageItem.provider}
               image={imageData}
               timing={timing}
-              failed={failedProviders.includes(provider)}
-              enabled={enabledProviders[provider]}
+              failed={failedProviders.includes(imageItem.provider)}
+              enabled={enabledProviders[imageItem.provider]}
               modelId={imageItem?.modelId ?? ""}
             />
           );
