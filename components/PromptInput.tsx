@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { ArrowUpRight, ArrowUp, RefreshCw } from "lucide-react";
 import { getRandomSuggestions, Suggestion } from "@/lib/suggestions";
@@ -40,10 +39,6 @@ export function PromptInput({
     }
   };
 
-  // const handleRefreshSuggestions = () => {
-  //   setCurrentSuggestions(getRandomSuggestions());
-  // };
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -78,7 +73,7 @@ export function PromptInput({
                   key={index}
                   onClick={() => handleSuggestionSelect(suggestion.prompt)}
                   className={cn(
-                    "flex items-center justify-between px-2 rounded-lg py-1 bg-background text-sm hover:opacity-70 group transition-opacity duration-200",
+                    "flex items-center justify-between px-2 rounded-lg py-1 bg-background text-sm transition-transform duration-200 ease-in-out hover:scale-105 hover:bg-zinc-200",
                     index > 3
                       ? "hidden md:flex"
                       : index > 2
@@ -91,7 +86,7 @@ export function PromptInput({
                       {suggestion.text.toLowerCase()}
                     </span>
                   </span>
-                  <ArrowUpRight className="ml-1 h-2 w-2 sm:h-3 sm:w-3 text-zinc-500 group-hover:opacity-70" />
+                  <ArrowUpRight className="ml-1 h-2 w-2 sm:h-3 sm:w-3 text-zinc-500" />
                 </button>
               ))}
             </div>
