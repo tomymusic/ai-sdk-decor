@@ -1,7 +1,0 @@
-name = "AI SDK Decor Block"
-type = "theme_app_extension"
-handle = "ai-sdk-decor-block"
-version = "1.0.0"
-
-[blocks]
-product = "./blocks/product.json"
