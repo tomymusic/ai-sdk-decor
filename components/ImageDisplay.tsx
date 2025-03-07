@@ -5,9 +5,17 @@ import { Download, ImageIcon, AlertCircle, Share } from "lucide-react";
 import { Stopwatch } from "./Stopwatch";
 import { cn } from "@/lib/utils";
 import { imageHelpers } from "@/lib/image-helpers";
-import { ProviderTiming } from "@/lib/image-types";
+// ❌ Eliminamos la importación de ProviderTiming
+// import { ProviderTiming } from "@/lib/image-types";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+
+// ✅ Definimos ProviderTiming directamente aquí en lugar de importarlo
+interface ProviderTiming {
+  startTime?: number;
+  completionTime?: number;
+  elapsed?: number;
+}
 
 interface ImageDisplayProps {
   provider: string;
