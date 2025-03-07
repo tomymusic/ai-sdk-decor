@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowUpRight, ArrowUp, RefreshCw } from "lucide-react";
+import { ArrowUpRight, ArrowUp, RefreshCw, Shirt } from "lucide-react";
 import { getRandomSuggestions, Suggestion } from "@/lib/suggestions";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
@@ -52,14 +52,20 @@ export function PromptInput({
     <div className="w-full mb-8">
       <div className="bg-zinc-50 rounded-xl p-4">
         <div className="flex flex-col gap-3">
-          <Textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Choose a clothing item"
-            rows={3}
-            className="text-base bg-transparent border-none p-0 resize-none placeholder:text-zinc-500 text-[#111111] focus-visible:ring-0 focus-visible:ring-offset-0"
-          />
+          {/* Input con icono dentro y cambio de color en el borde */}
+          <div className="relative focus-within:ring-2 focus-within:ring-black rounded-lg bg-white p-2">
+            <span className="absolute left-3 top-3 text-zinc-400">
+              <Shirt className="w-5 h-5" />
+            </span>
+            <Textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Choose a clothing item"
+              rows={3}
+              className="pl-10 text-base bg-transparent border-none p-0 resize-none placeholder:text-zinc-500 text-[#111111] focus:ring-transparent"
+            />
+          </div>
           <div className="flex items-center justify-between pt-1">
             <div className="flex items-center justify-between space-x-2">
               <button
