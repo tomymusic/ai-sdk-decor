@@ -45,9 +45,18 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
   return (
     <div className="w-full mb-8">
       <div className="bg-zinc-50 rounded-xl p-4">
-        <label className="block text-base font-semibold text-[#111111]">Upload Your Photo</label>
-        <input type="file" accept="image/*" onChange={handleImageChange} className="mt-2 text-sm" />
-        {loading && <p className="text-sm text-zinc-500">Uploading...</p>}
+        <label className="block text-base font-semibold text-[#111111] mb-2">
+          Upload Your Photo
+        </label>
+        <div className="relative">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full cursor-pointer text-base bg-transparent border-none p-3 rounded-md text-[#111111] focus-visible:ring-0 focus-visible:ring-offset-0 file:bg-black file:text-white file:border-none file:rounded-lg file:px-4 file:py-2"
+          />
+        </div>
+        {loading && <p className="text-sm text-zinc-500 mt-2">Uploading...</p>}
         {preview && (
           <div className="mt-4 w-40 rounded-lg overflow-hidden">
             <Image src={preview} alt="Preview" width={160} height={160} className="rounded-lg" />
