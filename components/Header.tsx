@@ -33,7 +33,7 @@ export const Header = () => {
           <h1 className="text-xl flex sm:text-2xl sm:font-bold antialiased font-semibold">
             <div className="flex items-center mr-2 cursor-default">
               <SparklesIcon />
-              Try On
+              Try-On
             </div>
             AI
           </h1>
