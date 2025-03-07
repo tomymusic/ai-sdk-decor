@@ -1,5 +1,3 @@
-import { Button } from "./ui/button";
-
 const SparklesIcon = ({ size = 18 }) => {
   return (
     <svg
