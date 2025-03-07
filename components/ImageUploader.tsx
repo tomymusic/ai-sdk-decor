@@ -17,7 +17,7 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
 
     setLoading(true);
 
-    // 🚀 Subir imagen a Cloudinary a través de nuestra API
+    // 🚀 Upload image to Cloudinary through our API
     const formData = new FormData();
     formData.append("file", file);
 
@@ -33,10 +33,10 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
         onImageUpload(data.imageUrl);
         setPreview(data.imageUrl);
       } else {
-        console.error("❌ Error al subir imagen:", data.error);
+        console.error("❌ Error uploading image:", data.error);
       }
     } catch (error) {
-      console.error("❌ Error de red:", error);
+      console.error("❌ Network error:", error);
     }
 
     setLoading(false);
@@ -44,7 +44,7 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
 
   return (
     <div className="mb-6">
-      <label className="block text-lg font-medium text-gray-700">Upload an Image</label>
+      <label className="block text-lg font-medium text-gray-700">Upload Your Photo</label>
       <input type="file" accept="image/*" onChange={handleImageChange} className="mt-2" />
       {loading && <p>Uploading...</p>}
       {preview && (
