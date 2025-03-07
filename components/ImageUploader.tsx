@@ -43,15 +43,17 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
   };
 
   return (
-    <div className="mb-6">
-      <label className="block text-lg font-medium text-gray-700">Upload Your Photo</label>
-      <input type="file" accept="image/*" onChange={handleImageChange} className="mt-2" />
-      {loading && <p>Uploading...</p>}
-      {preview && (
-        <div className="mt-4 w-40 rounded-lg overflow-hidden">
-          <Image src={preview} alt="Preview" width={160} height={160} className="rounded-lg" />
-        </div>
-      )}
+    <div className="w-full mb-8">
+      <div className="bg-zinc-50 rounded-xl p-4">
+        <label className="block text-base font-semibold text-[#111111]">Upload Your Photo</label>
+        <input type="file" accept="image/*" onChange={handleImageChange} className="mt-2 text-sm" />
+        {loading && <p className="text-sm text-zinc-500">Uploading...</p>}
+        {preview && (
+          <div className="mt-4 w-40 rounded-lg overflow-hidden">
+            <Image src={preview} alt="Preview" width={160} height={160} className="rounded-lg" />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
