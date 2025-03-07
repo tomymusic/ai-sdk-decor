@@ -12,7 +12,7 @@ export default function Providers({ children }: { children: ReactNode }) {
     useEffect(() => {
         if (typeof window !== "undefined") {
             const searchParams = new URLSearchParams(window.location.search);
-            let shopifyHost = searchParams.get("host");
+            const shopifyHost = searchParams.get("host"); // 🔹 Cambiado a `const`
 
             if (shopifyHost) {
                 try {
