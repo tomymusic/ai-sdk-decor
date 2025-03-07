@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
-import Providers from "./providers"; // Importamos Shopify App Bridge
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,9 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="font-sans antialiased">
-        <Providers> {/* Envuelve la app con Shopify App Bridge */}
-          {children}
-        </Providers>
+        {children}
         <Analytics />
       </body>
     </html>
