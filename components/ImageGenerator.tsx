@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { ImageDisplay } from "./ImageDisplay";
-import { ImageCarousel } from "@/components/ImageCarousel";
 import { GeneratedImage, ImageError, ProviderTiming } from "@/lib/image-types";
 import {
   PROVIDER_ORDER,
@@ -78,18 +77,6 @@ export function ImageGenerator({
         >
           <Settings className="h-4 w-4" />
         </Button>
-      </div>
-
-      {/* Mobile layout: Carousel */}
-      <div className="sm:hidden">
-        <ImageCarousel
-          providers={PROVIDER_ORDER}
-          images={images}
-          timings={timings}
-          failedProviders={failedProviders}
-          enabledProviders={enabledProviders}
-          providerToModel={initializeProviderRecord<string>()}
-        />
       </div>
 
       {/* Desktop layout: Grid */}
