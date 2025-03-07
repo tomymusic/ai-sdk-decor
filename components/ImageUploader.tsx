@@ -53,7 +53,7 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
             type="file"
             accept="image/*"
             onChange={handleImageChange}
-            className="w-full cursor-pointer text-base bg-transparent border-none p-3 rounded-md text-[#111111] focus-visible:ring-0 focus-visible:ring-offset-0 file:bg-black file:text-white file:border-none file:rounded-lg file:px-4 file:py-2"
+            className="w-full cursor-pointer text-sm bg-transparent border-none p-2 rounded-md text-[#111111] focus-visible:ring-0 focus-visible:ring-offset-0 file:bg-black file:text-white file:border-none file:rounded-lg file:px-3 file:py-1 file:text-sm"
           />
         </div>
         {loading && <p className="text-sm text-zinc-500 mt-2">Uploading...</p>}
