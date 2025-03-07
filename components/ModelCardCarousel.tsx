@@ -11,7 +11,6 @@ import {
 import { ModelSelect } from "./ModelSelect";
 import { cn } from "@/lib/utils";
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
-import { ProviderKey } from "@/lib/provider-config";
 import { ProviderTiming } from "@/lib/image-types";
 
 interface ModelCardCarouselProps {
@@ -21,10 +20,10 @@ interface ModelCardCarouselProps {
     iconPath: string;
     color: string;
     value: string;
-    providerKey: ProviderKey;
+    providerKey: string; // Se reemplaza ProviderKey por string
     enabled?: boolean;
     onToggle?: (enabled: boolean) => void;
-    onChange: (value: string, providerKey: ProviderKey) => void;
+    onChange: (value: string, providerKey: string) => void; // Se cambia ProviderKey por string
     image: string | null | undefined;
     timing?: ProviderTiming;
     failed?: boolean;
@@ -59,7 +58,6 @@ export function ModelCardCarousel({ models }: ModelCardCarouselProps) {
     api.on("select", onSelect);
     return () => {
       api.off("select", onSelect);
-      return;
     };
   }, [api]);
 
