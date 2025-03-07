@@ -49,12 +49,12 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
           <label className="text-base font-semibold text-[#111111]">
             Upload Your Photo
           </label>
-          <div className="flex items-center">
+          <div className="flex">
             <input
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="block w-full cursor-pointer text-sm bg-transparent border-none p-2 rounded-md text-[#111111] focus-visible:ring-0 focus-visible:ring-offset-0 file:bg-black file:text-white file:border-none file:rounded-lg file:px-0 file:py-1 file:text-sm"
+              className="block w-full cursor-pointer text-sm bg-transparent border-none p-2 rounded-md text-[#111111] focus-visible:ring-0 focus-visible:ring-offset-0 file:bg-black file:text-white file:border-none file:rounded-lg file:px-4 file:py-1 file:text-sm"
             />
           </div>
         </div>
