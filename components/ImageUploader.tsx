@@ -43,8 +43,9 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
     <div className="w-full mb-8">
       <div className="bg-zinc-50 rounded-xl p-4">
         <div className="flex flex-col gap-2">
-          <label className="text-base font-semibold text-[#111111]">
-            Upload Your Photo
+          {/* 🔹 Reemplazamos "Upload Your Photo" por las instrucciones */}
+          <label className="text-sm text-zinc-500">
+            Upload a full-body photo, choose a clothing item, and let AI transform your look!
           </label>
           <div className="flex">
             <input
