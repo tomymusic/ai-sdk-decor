@@ -8,11 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ImageDisplay } from "./ImageDisplay";
 import { GeneratedImage, ImageError, ProviderTiming } from "@/lib/image-types";
-import {
-  PROVIDER_ORDER,
-  ProviderKey,
-  initializeProviderRecord,
-} from "@/lib/provider-config";
+import { PROVIDER_ORDER, ProviderKey } from "@/lib/provider-config";
 
 interface ImageGeneratorProps {
   images: GeneratedImage[];
