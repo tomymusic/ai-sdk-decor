@@ -79,9 +79,9 @@ export function PromptInput({
                   onClick={() => handleSuggestionSelect(suggestion.prompt)}
                   className={cn(
                     "flex items-center justify-between px-2 rounded-lg py-1 bg-background text-sm hover:opacity-70 group transition-opacity duration-200",
-                    index > 2
+                    index > 4
                       ? "hidden md:flex"
-                      : index > 1
+                      : index > 3
                         ? "hidden sm:flex"
                         : "",
                   )}
