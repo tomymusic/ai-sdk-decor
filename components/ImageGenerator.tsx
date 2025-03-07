@@ -7,14 +7,34 @@ import {
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { ImageDisplay } from "./ImageDisplay";
-import { GeneratedImage, ImageError, ProviderTiming } from "@/lib/image-types";
+
+// ❌ Se elimina la importación de "@/lib/image-types"
+// import { GeneratedImage, ImageError, ProviderTiming } from "@/lib/image-types";
+
+// ✅ Se definen solo las interfaces necesarias directamente aquí
+interface GeneratedImage {
+  provider: string;
+  image: string | null;
+  modelId?: string;
+}
+
+interface ImageError {
+  provider: string;
+  message: string;
+}
+
+interface ProviderTiming {
+  startTime?: number;
+  completionTime?: number;
+  elapsed?: number;
+}
 
 interface ImageGeneratorProps {
   images: GeneratedImage[];
   errors: ImageError[];
-  failedProviders: string[]; // Se cambia ProviderKey[] por string[]
-  timings: Record<string, ProviderTiming>; // Se cambia ProviderKey por string
-  enabledProviders: Record<string, boolean>; // Se cambia ProviderKey por string
+  failedProviders: string[];
+  timings: Record<string, ProviderTiming>;
+  enabledProviders: Record<string, boolean>;
   toggleView: () => void;
 }
 
