@@ -12,13 +12,13 @@ export async function POST(req: NextRequest) {
   try {
     console.log("📌 API recibió una solicitud");
 
-    // ✅ Recibimos la imagen del usuario + datos del producto
-    const { userImage, shop, productId, handle } = await req.json();
-    console.log("✅ Recibido en la API:", { userImageLength: userImage?.length, shop, productId, handle });
+    // ✅ Volvemos a incluir `productDescription` en la solicitud
+    const { userImage, shop, productId, handle, productDescription } = await req.json();
+    console.log("✅ Recibido en la API:", { userImageLength: userImage?.length, shop, productId, handle, productDescription });
 
-    if (!userImage || !shop || (!productId && !handle)) {
-      console.error("❌ Faltan datos: userImage, shop, productId o handle");
-      return NextResponse.json({ error: "User image, shop, and product ID or handle are required" }, { status: 400 });
+    if (!userImage || !shop || (!productId && !handle) || !productDescription) {
+      console.error("❌ Faltan datos: userImage, shop, productId, handle o productDescription");
+      return NextResponse.json({ error: "User image, shop, product ID or handle, and product description are required" }, { status: 400 });
     }
 
     // 🔄 Obtener la imagen y la categoría del producto desde Shopify Remix
@@ -45,13 +45,13 @@ export async function POST(req: NextRequest) {
       auth: process.env.REPLICATE_API_TOKEN!,
     });
 
-    // 🔥 Enviar imágenes al modelo de Replicate AI
+    // ✅ Ahora `productDescription` está presente en la solicitud a Replicate
     const prediction = await replicate.predictions.create({
       version: "c871bb9b046607b680449ecbae55fd8c6d945e0a1948644bf2361b3d021d3ff4", // Modelo dm-vton
       input: {
         human_img: userImage,                         // 📸 Imagen del usuario (URL)
         garm_img: productImage,                       // 👕 Imagen del producto (URL)
-        garment_des: productDescription,              // 📄 Descripción de la prenda
+        garment_des: productDescription,              // 📄 Descripción de la prenda (Restaurado ✅)
         category: productCategory,                    // 🏷️ upper_body, lower_body, dresses
         crop: true,                                   // ✂️ Activamos crop por defecto
         seed: 42,                                     // 🌱 Fijamos la semilla en 42
