@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Replicate from "replicate";
-import { fetchProductInfo } from "../../../utils/fetchProductInfo";
+import { fetchProductInfo } from "@/utils/fetchProductInfo"; // ✅ Cambio a "@"
 
 export const config = {
   api: {
@@ -12,8 +12,11 @@ export async function POST(req: NextRequest) {
   try {
     console.log("📌 API recibió una solicitud");
 
-    // ✅ Volvemos a incluir `productDescription` en la solicitud
-    const { userImage, shop, productId, handle, productDescription } = await req.json();
+    // ✅ Obtener `handle` desde el body o la URL si no está presente
+    const { userImage, shop, productId, handle: bodyHandle, productDescription } = await req.json();
+    const urlHandle = new URL(req.url).searchParams.get("handle");
+    const handle = bodyHandle || urlHandle; // 🔥 Toma el `handle` desde el body o la URL
+
     console.log("✅ Recibido en la API:", { userImageLength: userImage?.length, shop, productId, handle, productDescription });
 
     if (!userImage || !shop || (!productId && !handle) || !productDescription) {
@@ -31,7 +34,6 @@ export async function POST(req: NextRequest) {
     }
 
     const { image: productImage, type: productCategory } = productInfo;
-
     console.log("✅ Producto obtenido:", { productImage, productCategory });
 
     // 🔥 Asegurar que la categoría es válida
@@ -45,19 +47,18 @@ export async function POST(req: NextRequest) {
       auth: process.env.REPLICATE_API_TOKEN!,
     });
 
-    // ✅ Ahora `productDescription` está presente en la solicitud a Replicate
     const prediction = await replicate.predictions.create({
-      version: "c871bb9b046607b680449ecbae55fd8c6d945e0a1948644bf2361b3d021d3ff4", // Modelo dm-vton
+      version: "c871bb9b046607b680449ecbae55fd8c6d945e0a1948644bf2361b3d021d3ff4",
       input: {
-        human_img: userImage,                         // 📸 Imagen del usuario (URL)
-        garm_img: productImage,                       // 👕 Imagen del producto (URL)
-        garment_des: productDescription,              // 📄 Descripción de la prenda (Restaurado ✅)
-        category: productCategory,                    // 🏷️ upper_body, lower_body, dresses
-        crop: true,                                   // ✂️ Activamos crop por defecto
-        seed: 42,                                     // 🌱 Fijamos la semilla en 42
-        steps: 30,                                    // 🔄 Número de pasos de inferencia
-        force_dc: false,                              // ❌ No activamos DressCode (excepto en dresses)
-        mask_only: false                              // ❌ No queremos solo la máscara, queremos la imagen final
+        human_img: userImage,
+        garm_img: productImage,
+        garment_des: productDescription,
+        category: productCategory,
+        crop: true,
+        seed: 42,
+        steps: 30,
+        force_dc: false,
+        mask_only: false
       },
     });
 
@@ -71,7 +72,7 @@ export async function POST(req: NextRequest) {
     // 🔄 Esperamos la respuesta de Replicate
     let response;
     while (!response || response.status !== "succeeded") {
-      await new Promise((res) => setTimeout(res, 2000)); // Esperar 2 segundos entre consultas
+      await new Promise((res) => setTimeout(res, 2000));
       response = await fetch(prediction.urls.get, {
         headers: {
           Authorization: `Token ${process.env.REPLICATE_API_TOKEN}`,
@@ -82,13 +83,12 @@ export async function POST(req: NextRequest) {
 
     console.log("✅ Respuesta final de Replicate:", response);
 
-    // ✅ Verificar si la respuesta contiene la imagen generada
     let finalImage: string | null = null;
 
     if (typeof response.output === "string") {
-      finalImage = response.output; // ✅ Caso cuando output es una string (URL de la imagen)
+      finalImage = response.output;
     } else if (Array.isArray(response.output) && response.output.length > 0) {
-      finalImage = response.output[response.output.length - 1]; // ✅ Caso cuando es un array
+      finalImage = response.output[response.output.length - 1];
     }
 
     if (!finalImage) {
