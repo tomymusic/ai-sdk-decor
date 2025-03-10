@@ -17,16 +17,27 @@ export async function POST(req: NextRequest) {
     const urlHandle = new URL(req.url).searchParams.get("handle");
     const handle = bodyHandle || urlHandle; // 🔥 Toma el `handle` desde el body o la URL
 
-    console.log("✅ Recibido en la API:", { userImageLength: userImage?.length, shop, productId, handle, productDescription });
+    console.log("✅ Recibido en la API:", {
+      userImageLength: userImage?.length,
+      shop,
+      productId,
+      handle,
+      productDescription,
+    });
 
     if (!userImage || !shop || (!productId && !handle) || !productDescription) {
       console.error("❌ Faltan datos: userImage, shop, productId, handle o productDescription");
-      return NextResponse.json({ error: "User image, shop, product ID or handle, and product description are required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "User image, shop, product ID or handle, and product description are required" },
+        { status: 400 }
+      );
     }
 
     // 🔄 Obtener la imagen y la categoría del producto desde Shopify Remix
-    console.log("🔄 Buscando producto en Shopify Remix...");
+    console.log("🔄 Llamando a fetchProductInfo con:", { shop, productId, handle });
     const productInfo = await fetchProductInfo(shop, productId, handle);
+
+    console.log("🔍 Respuesta de fetchProductInfo:", productInfo);
 
     if (!productInfo) {
       console.error("❌ Error al obtener el producto o categoría no válida.");
@@ -58,7 +69,7 @@ export async function POST(req: NextRequest) {
         seed: 42,
         steps: 30,
         force_dc: false,
-        mask_only: false
+        mask_only: false,
       },
     });
 
@@ -98,7 +109,6 @@ export async function POST(req: NextRequest) {
 
     console.log("✅ Imagen generada:", finalImage);
     return NextResponse.json({ image_url: finalImage }, { status: 200 });
-
   } catch (error) {
     console.error("❌ Error en la API:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
