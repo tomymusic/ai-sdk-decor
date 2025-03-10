@@ -89,6 +89,7 @@ export async function fetchProductInfo(shopDomain: string, productId?: string, h
     // ✅ Retornar solo los datos necesarios
     return {
       type: category, // 🔥 Categoría detectada (upper_body, lower_body o dresses)
+      image,
     };
 
   } catch (error) {
