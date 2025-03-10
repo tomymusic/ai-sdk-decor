@@ -38,9 +38,16 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     }
     setIsLoading(true);
 
+    // 🔍 Obtener `handle` desde la URL del iframe
+    const urlParams = new URLSearchParams(window.location.search);
+    const handle = urlParams.get("handle");
+    console.log("🔍 Handle obtenido en el frontend:", handle);
+
     const payload = {
-      userImage: imageUrl, // ✅ Ahora enviamos la URL de la imagen en vez de Base64
-      prompt,
+      userImage: imageUrl, // ✅ Imagen del usuario
+      prompt, // ✅ Prompt del usuario
+      shop: window.location.hostname, // ✅ Dominio de la tienda
+      handle, // ✅ Agregamos el `handle`
     };
 
     try {
