@@ -63,6 +63,10 @@ export async function fetchProductInfo(shopDomain: string, productId?: string, h
     // ✅ Extraer el título y product-type
     const title = data.title || "";
     const productType = data["product-type"] || ""; // 🔥 Se usa "product-type" en lugar de product_type
+
+    console.log("🧐 Título del producto recibido:", title);
+    console.log("🧐 Product-type recibido:", productType);
+    
     const combinedText = (title + " " + productType).toLowerCase();
 
     // 🔥 Dividir el texto en palabras individuales
