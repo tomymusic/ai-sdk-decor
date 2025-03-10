@@ -68,6 +68,9 @@ export async function fetchProductInfo(shopDomain: string, productId?: string, h
     // 🔥 Dividir el texto en palabras individuales
     const words = combinedText.split(/\s+/); // Separa por espacios
 
+    // 🔍 Log para ver qué palabras se están procesando
+    console.log("🔍 Palabras procesadas para categorización:", words);
+    
     // 🔍 Buscar si alguna palabra coincide con CATEGORY_MAP
     const category = Object.entries(CATEGORY_MAP).find(([, keywords]) =>
       keywords.some(keyword => words.includes(keyword))
