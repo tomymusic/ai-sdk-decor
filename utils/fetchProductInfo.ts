@@ -13,16 +13,18 @@ export async function fetchProductInfo(shopDomain: string, productId?: string, h
 
     // ✅ Construir la URL con `id` o `handle`
     const queryParam = productId ? `id=${productId}` : `handle=${handle}`;
-    const response = await fetch(
-      `https://${shopDomain}/api/products?${queryParam}`
-    );
+    const apiUrl = `https://${shopDomain}/api/products?${queryParam}`;
+    
+    console.log("🔗 URL de la petición a Shopify Remix:", apiUrl); // 🔥 Log de la URL
+    
+    const response = await fetch(apiUrl);
 
     if (!response.ok) {
       throw new Error(`❌ Error al obtener el producto: ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log("✅ Producto recibido de Shopify Remix:", data);
+    console.log("✅ Producto recibido de Shopify Remix:", data); // 🔥 Log de la respuesta de Shopify
 
     // 🔥 Extraer y mapear la categoría del producto
     const category = Object.entries(CATEGORY_MAP).find(([, keywords]) =>
