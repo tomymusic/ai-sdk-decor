@@ -45,10 +45,12 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
 
     const payload = {
       userImage: imageUrl, // ✅ Imagen del usuario
-      productDescription: prompt, // 🔥 Corregido aquí
+      productDescription: prompt, // ✅ Mantiene `prompt` como `productDescription`
       shop: window.location.hostname, // ✅ Dominio de la tienda
       handle, // ✅ Agregamos el `handle`
     };
+
+    console.log("📌 Enviando datos al backend:", payload); // 🔥 Log agregado aquí
 
     try {
       const response = await fetch("/api/generate-images", {
@@ -93,10 +95,17 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
               <ReactCompareSlider
                 itemOne={<ReactCompareSliderImage src={imageUrl} alt="Uploaded Image" style={{ objectFit: "contain", width: "100%", height: "auto", borderRadius: "12px" }} />}
                 itemTwo={<ReactCompareSliderImage src={generatedImage} alt="Generated Image" style={{ objectFit: "contain", width: "100%", height: "auto", borderRadius: "12px" }} />}
-                handle={<div style={{
-                  width: "20px", height: "20px", backgroundColor: "rgba(255,255,255,0.8)", borderRadius: "50%",
-                  boxShadow: "0 2px 10px rgba(0,0,0,0.2)"
-                }} />}
+                handle={
+                  <div
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      backgroundColor: "rgba(255,255,255,0.8)",
+                      borderRadius: "50%",
+                      boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+                    }}
+                  />
+                }
                 style={{ width: "100%", maxWidth: "600px", height: "auto", borderRadius: "12px", margin: "0 auto" }}
               />
             </div>
