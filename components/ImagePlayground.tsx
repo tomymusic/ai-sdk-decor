@@ -46,7 +46,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     const payload = {
       userImage: imageUrl, // ✅ Imagen del usuario
       productDescription: prompt, // ✅ Mantiene `prompt` como `productDescription`
-      shop: window.location.hostname, // ✅ Dominio de la tienda
+      shop: new URL(document.referrer).hostname, // ✅ Dominio de la tienda
       handle, // ✅ Agregamos el `handle`
     };
 
