@@ -10,6 +10,8 @@ const CATEGORY_MAP: Record<string, string[]> = {
 // ✅ Función para obtener el Access Token
 async function getAdminAccessToken(shop: string) {
   try {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; // ⚠️ SOLO PARA PRUEBAS, NO USAR EN PRODUCCIÓN
+
     console.log(`📡 Obteniendo Access Token para la tienda: ${shop}...`);
     const response = await fetch(`https://humble-doodle-r46qqxwx749p34qj-4040.app.github.dev/api/get-token?shop=${shop}`);
 
