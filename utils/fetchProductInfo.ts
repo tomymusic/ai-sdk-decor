@@ -60,23 +60,27 @@ export async function fetchProductInfo(shopDomain: string, productId?: string, h
     const data = await response.json();
     console.log("✅ Producto recibido de Shopify Remix:", JSON.stringify(data, null, 2));
 
-    // Extraer y mapear la categoría del producto
+    // ✅ Extraer el título y product-type
     const title = data.title || "";
-    const productType = data.product_type || "";
+    const productType = data["product-type"] || ""; // 🔥 Se usa "product-type" en lugar de product_type
     const combinedText = (title + " " + productType).toLowerCase();
 
+    // 🔥 Dividir el texto en palabras individuales
+    const words = combinedText.split(/\s+/); // Separa por espacios
+
+    // 🔍 Buscar si alguna palabra coincide con CATEGORY_MAP
     const category = Object.entries(CATEGORY_MAP).find(([, keywords]) =>
-      keywords.some(keyword => combinedText.includes(keyword))
+      keywords.some(keyword => words.includes(keyword))
     )?.[0] || null;
 
     if (!category) {
-      console.warn("⚠️ Categoría no encontrada, no se puede procesar para IA.");
+      console.warn("⚠️ No se pudo encontrar una categoría para este producto.");
       return null;
     }
 
-    // Retornar solo los datos necesarios
+    // ✅ Retornar solo los datos necesarios
     return {
-      type: category, // 🔥 Categoría (upper_body, lower_body o dresses)
+      type: category, // 🔥 Categoría detectada (upper_body, lower_body o dresses)
       image: data.featuredImage?.url || data.image_url || null, // Imagen del producto
     };
 
