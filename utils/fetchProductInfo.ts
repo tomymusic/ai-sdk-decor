@@ -61,8 +61,8 @@ export async function fetchProductInfo(shopDomain: string, productId?: string, h
     console.log("✅ Producto recibido de Shopify Remix:", JSON.stringify(data, null, 2));
 
     // ✅ Extraer el título y product-type
-    const title = data.title || "";
-    const productType = data.productType || ""; // 🔥 Antes era data["product-type"]
+    const title = data.data?.productByHandle?.title || "";
+    const productType = data.data?.productByHandle?.productType || "";
     console.log("🧐 Título del producto recibido:", title);
     console.log("🧐 Product-type recibido:", productType);
     
