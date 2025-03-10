@@ -13,29 +13,28 @@ export async function POST(req: NextRequest) {
     console.log("📌 API recibió una solicitud");
 
     // ✅ Obtener `handle` desde el body o la URL si no está presente
-    const { userImage, shop, productId, handle: bodyHandle, productDescription } = await req.json();
+    const { userImage, shop, handle: bodyHandle, productDescription } = await req.json();
     const urlHandle = new URL(req.url).searchParams.get("handle");
     const handle = bodyHandle || urlHandle; // 🔥 Toma el `handle` desde el body o la URL
 
     console.log("✅ Recibido en la API:", {
       userImageLength: userImage?.length,
       shop,
-      productId,
       handle,
       productDescription,
     });
 
-    if (!userImage || !shop || (!productId && !handle) || !productDescription) {
-      console.error("❌ Faltan datos: userImage, shop, productId, handle o productDescription");
+    if (!userImage || !shop || !handle || !productDescription) {
+      console.error("❌ Faltan datos: userImage, shop, handle o productDescription");
       return NextResponse.json(
-        { error: "User image, shop, product ID or handle, and product description are required" },
+        { error: "User image, shop, handle, and product description are required" },
         { status: 400 }
       );
     }
 
     // 🔄 Obtener la imagen y la categoría del producto desde Shopify Remix
-    console.log("🔄 Llamando a fetchProductInfo con:", { shop, productId, handle });
-    const productInfo = await fetchProductInfo(shop, productId, handle);
+    console.log("🔄 Llamando a fetchProductInfo con:", { shop, handle });
+    const productInfo = await fetchProductInfo(shop, handle);
 
     console.log("🔍 Respuesta de fetchProductInfo:", productInfo);
 
