@@ -29,7 +29,7 @@ async function getAdminAccessToken(shop: string) {
 }
 
 // ✅ Función para obtener información del producto
-export async function fetchProductInfo(shopDomain: string, productId?: string, handle?: string) {
+export async function fetchProductInfo(shopDomain: string, handle: string) {
   try {
     console.log(`📡 Obteniendo información del producto para la tienda: ${shopDomain}...`);
 
@@ -40,10 +40,9 @@ export async function fetchProductInfo(shopDomain: string, productId?: string, h
       return null;
     }
 
-    // Construcción de la URL de Shopify Remix
+    // Construcción de la URL de Shopify Remix (solo con `handle`)
     const SHOPIFY_REMIX_API_URL = "https://humble-doodle-r46qqxwx749p34qj-4040.app.github.dev";
-    const queryParam = productId ? `id=${productId}` : `handle=${handle}`;
-    const apiUrl = `${SHOPIFY_REMIX_API_URL}/api/products?${queryParam}`;
+    const apiUrl = `${SHOPIFY_REMIX_API_URL}/api/products?handle=${handle}`;
 
     console.log("🔗 URL de petición a Shopify Remix:", apiUrl);
 
