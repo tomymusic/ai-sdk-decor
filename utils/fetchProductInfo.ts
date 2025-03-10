@@ -87,7 +87,7 @@ export async function fetchProductInfo(shopDomain: string, productId?: string, h
     // ✅ Retornar solo los datos necesarios
     return {
       type: category, // 🔥 Categoría detectada (upper_body, lower_body o dresses)
-      image: data.featuredImage?.url || data.image_url || null, // Imagen del producto
+      const image = data.data?.productByHandle?.featuredImage?.url || null;
     };
 
   } catch (error) {
