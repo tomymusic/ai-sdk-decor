@@ -11,9 +11,12 @@ export async function fetchProductInfo(shopDomain: string, productId?: string, h
   try {
     console.log("📡 Obteniendo información del producto desde Shopify Remix...");
 
+    // ✅ Usar la URL correcta de la API de Shopify Remix
+    const SHOPIFY_REMIX_API_URL = "https://humble-doodle-r46qqxwx749p34qj-4040.app.github.dev"; // 🔥 Cambio mínimo aquí
+
     // ✅ Construir la URL con `id` o `handle`
     const queryParam = productId ? `id=${productId}` : `handle=${handle}`;
-    const apiUrl = `https://${shopDomain}/api/products?${queryParam}`;
+    const apiUrl = `${SHOPIFY_REMIX_API_URL}/api/products?${queryParam}`;
     
     console.log("🔗 URL de la petición a Shopify Remix:", apiUrl); // 🔥 Log de la URL
     
