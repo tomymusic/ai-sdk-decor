@@ -51,7 +51,7 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
               className="block w-full cursor-pointer text-sm bg-transparent border-none p-2 rounded-md text-zinc-500 focus-visible:ring-0 focus-visible:ring-offset-0 file:bg-black file:text-white file:border-none file:rounded-lg file:px-3 file:py-1.5 file:text-sm"
             />
           </div>
-          <p className="text-sm text-[#111111]">
+          <p className="text-sm text-[#111111] text-center">
             Upload a full-body photo, choose a clothing item, and let AI transform your look!
           </p>
         </div>
