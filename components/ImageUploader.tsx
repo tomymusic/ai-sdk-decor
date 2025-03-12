@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import { useState } from "react";
 
@@ -43,17 +43,17 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
     <div className="w-full mb-8">
       <div className="rounded-xl p-4">
         <div className="flex flex-col gap-3">
-          <p className="text-sm text-[#111111]">
-            Upload a full-body photo, choose a clothing item, and let AI transform your look!
-          </p>
           <div className="flex">
             <input
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="block w-full cursor-pointer text-sm bg-transparent border-none p-2 rounded-md text-zinc-500 focus-visible:ring-0 focus-visible:ring-offset-0 file:bg-black file:text-white file:border-none file:rounded-lg file:px-3 file:py-1.5 file:text-sm"
+              className="block w-full cursor-pointer text-sm bg-transparent border border-gray-300 p-2 rounded-md text-zinc-500 focus-visible:ring-0 focus-visible:ring-offset-0 file:bg-black file:text-white file:border-none file:rounded-lg file:px-3 file:py-1.5 file:text-sm"
             />
           </div>
+          <p className="text-sm text-[#111111] text-center">
+            Upload a full-body photo, choose a clothing item, and let AI transform your look!
+          </p>
         </div>
         {loading && <p className="text-sm text-zinc-500 mt-2">Uploading...</p>}
       </div>
