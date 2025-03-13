@@ -78,7 +78,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-8">
       <div className="max-w-7xl mx-auto">
         <Header />
         <ImageUploader onImageUpload={handleImageUpload} />
