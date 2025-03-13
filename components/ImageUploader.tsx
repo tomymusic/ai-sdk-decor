@@ -40,7 +40,7 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
   };
 
   return (
-    <div className="w-full mb-4">
+    <div className="w-full mb-8">
       <div className="rounded-xl">
         <div className="flex flex-col gap-3">
           <p className="text-base text-[#111111] font-medium text-center leading-relaxed">
