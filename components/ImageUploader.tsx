@@ -1,4 +1,6 @@
-"react";
+"use client";
+
+import { useState } from "react";
 
 interface ImageUploaderProps {
   onImageUpload: (imageUrl: string | null) => void;
