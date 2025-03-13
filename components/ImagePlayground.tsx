@@ -81,6 +81,14 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
     <div className="min-h-screen bg-background pt-8">
       <div className="max-w-7xl mx-auto">
         {/* <Header /> */} {/* ❌ Comentado temporalmente */}
+        
+        <button
+          onClick={() => document.documentElement.classList.toggle('dark')}
+          className="mt-4 px-3 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-600 transition"
+        >
+        Toggle Dark Mode
+        </button>
+
         <ImageUploader onImageUpload={handleImageUpload} />
         <PromptInput
           onSubmit={handleSubmit}
