@@ -51,7 +51,7 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="block w-full cursor-pointer text-sm bg-transparent border-none p-0 rounded-md text-zinc-500 focus-visible:ring-0 focus-visible:ring-offset-0 file:bg-[#007AFF] file:text-white file:border-none file:rounded-lg file:px-3 file:py-1.5 file:text-sm file:p-0 file:mr-4"
+              className="block w-full cursor-pointer text-sm bg-transparent border-none p-0 rounded-md text-zinc-500 focus-visible:ring-0 focus-visible:ring-offset-0 file:bg-[#007AFF] file:text-white file:border-none file:rounded-lg file:px-3 file:py-1.5 file:text-sm file:p-0 file:mr-4 file:hover:bg-[#005FCC] file:active:bg-[#0045A3]"
             />
           </div>
         </div>
