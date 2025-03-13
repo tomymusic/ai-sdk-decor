@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { PromptInput } from "@/components/PromptInput";
-import { Header } from "@/components/Header";
+// import { Header } from "@/components/Header";
 import { ImageUploader } from "@/components/ImageUploader";
 import { Stopwatch } from "@/components/Stopwatch"; // ✅ Importamos Stopwatch
 import { Suggestion } from "@/lib/suggestions";
@@ -80,7 +80,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
   return (
     <div className="min-h-screen bg-background pt-8">
       <div className="max-w-7xl mx-auto">
-        <Header />
+        {/* <Header /> */} {/* ❌ Comentado temporalmente */}
         <ImageUploader onImageUpload={handleImageUpload} />
         <PromptInput
           onSubmit={handleSubmit}
