@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PromptInput } from "@/components/PromptInput";
 import { Header } from "@/components/Header";
 import { ImageUploader } from "@/components/ImageUploader";
+import { Stopwatch } from "@/components/Stopwatch"; // ✅ Importamos Stopwatch
 import { Suggestion } from "@/lib/suggestions";
 import { ReactCompareSlider, ReactCompareSliderImage } from "react-compare-slider";
 
@@ -17,6 +18,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [showProviders, setShowProviders] = useState(true);
   const [mode, setMode] = useState<"performance" | "quality">("performance");
+  const [startTime, setStartTime] = useState<number | null>(null); // ✅ Nuevo estado para el tiempo de inicio
 
   const toggleView = () => {
     setShowProviders((prev) => !prev);
@@ -37,6 +39,7 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
       return;
     }
     setIsLoading(true);
+    setStartTime(Date.now()); // ✅ Guardamos el tiempo de inicio
 
     // 🔍 Obtener `handle` desde la URL del iframe
     const urlParams = new URLSearchParams(window.location.search);
@@ -88,6 +91,13 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           mode={mode}
           onModeChange={handleModeChange}
         />
+
+        {/* ✅ Mostrar Stopwatch mientras la imagen se genera */}
+        {isLoading && startTime && (
+          <div className="flex justify-center mt-4">
+            <Stopwatch startTime={startTime} />
+          </div>
+        )}
 
         {imageUrl && generatedImage && (
           <div className="mt-6 flex justify-center">
