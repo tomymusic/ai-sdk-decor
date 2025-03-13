@@ -103,8 +103,24 @@ export function ImagePlayground({ suggestions = [] }: ImagePlaygroundProps) {
           <div className="mt-6 flex justify-center">
             <div className="w-full max-w-2xl rounded-lg overflow-hidden flex justify-center">
               <ReactCompareSlider
-                itemOne={<ReactCompareSliderImage src={imageUrl} alt="Uploaded Image" style={{ objectFit: "contain", width: "100%", height: "auto", borderRadius: "12px" }} />}
-                itemTwo={<ReactCompareSliderImage src={generatedImage} alt="Generated Image" style={{ objectFit: "contain", width: "100%", height: "auto", borderRadius: "12px" }} />}
+                itemOne={
+                  <ReactCompareSliderImage
+                    src={imageUrl}
+                    alt="Uploaded Image"
+                    className="opacity-0 transition-opacity duration-700"
+                    onLoad={(e) => e.currentTarget.classList.remove("opacity-0")}
+                    style={{ objectFit: "contain", width: "100%", height: "auto", borderRadius: "12px" }}
+                  />
+                }
+                itemTwo={
+                  <ReactCompareSliderImage
+                    src={generatedImage}
+                    alt="Generated Image"
+                    className="opacity-0 transition-opacity duration-700"
+                    onLoad={(e) => e.currentTarget.classList.remove("opacity-0")}
+                    style={{ objectFit: "contain", width: "100%", height: "auto", borderRadius: "12px" }}
+                  />
+                }
                 handle={
                   <div
                     style={{
